@@ -15,8 +15,8 @@ import java.math.BigDecimal;
 public class ProdutoModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "IDPRODUTO")
-    private Integer idProduto;
+    @Column(name = "CDPRODUTO")
+    private Integer cdProduto;
 
     //@Column(name = "IDESTOQUE")
     //private Estoque idEstoque;
@@ -28,7 +28,7 @@ public class ProdutoModel {
     private String dsProduto;
 
     @Column(name = "PRECO")
-    private Double preco;
+    private Double  preco;
 
     @Column(name = "CATEGORIA")
     private String categoria;

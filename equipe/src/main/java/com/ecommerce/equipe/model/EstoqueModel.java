@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Table(name = "TBESTOQUE")
 public class EstoqueModel {
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "IDESTOQUE")

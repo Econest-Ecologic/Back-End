@@ -14,6 +14,7 @@ import java.util.Date;
 @Entity
 @Table(name = "TBPEDIDO")
 public class PedidoModel {
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "IDPEDIDO")

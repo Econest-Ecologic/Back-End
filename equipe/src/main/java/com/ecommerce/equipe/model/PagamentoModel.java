@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Table(name = "TBPAGAMENTO")
 public class PagamentoModel {
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Integer idPagamento;

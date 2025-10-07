@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class ItemPedidoModel {
-    @Id
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     @Column(name = "IDITEMCARRINHO")
     private Integer idItemCarrinho;
 
