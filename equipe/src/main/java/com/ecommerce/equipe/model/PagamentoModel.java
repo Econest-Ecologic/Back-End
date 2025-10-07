@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,7 +16,8 @@ public class PagamentoModel {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private Integer idPagamento;
+    @Column(name = "CDPAGAMENTO")
+    private Integer cdPagamento;
 
     //@Column(name = "METODO")
     //private enum metodo;
@@ -23,5 +26,5 @@ public class PagamentoModel {
     private Double nuValor;
 
     @Column(name = "DTPAGAMENTO")
-    private Double dtPagamento;
+    private Date dtPagamento;
 }
