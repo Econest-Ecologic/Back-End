@@ -20,6 +20,7 @@ public class PedidoModel {
     @Column(name = "CDPEDIDO")
     private Integer cdPedido;
 
+
     @Column(name = "DTPEDIDO")
     private Date dtPedido;
 
