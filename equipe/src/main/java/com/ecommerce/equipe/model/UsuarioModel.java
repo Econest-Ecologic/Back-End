@@ -6,6 +6,9 @@ import lombok.CustomLog;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Data
 @Entity
 @NoArgsConstructor
@@ -36,10 +39,9 @@ public class UsuarioModel {
     @Column(name = "NUTELEFONE")
     private String nuTelefone;
 
-    //testeeee
-
-    //ALTERACOES ROLOES
-    //@Column(name = "TIPO")
-    //private enum tipo;
-
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "TBUSUARIOS_ROLES",
+        joinColumns = @JoinColumn(name = "CDUSUARIO"),
+        inverseJoinColumns = @JoinColumn(name = "CDROLE"))
+    private Set<Role> roles = new HashSet<>();
 }
