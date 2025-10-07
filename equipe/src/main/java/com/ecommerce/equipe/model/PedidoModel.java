@@ -17,8 +17,8 @@ public class PedidoModel {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "IDPEDIDO")
-    private Integer idPedido;
+    @Column(name = "CDPEDIDO")
+    private Integer cdPedido;
 
     @Column(name = "DTPEDIDO")
     private Date dtPedido;
