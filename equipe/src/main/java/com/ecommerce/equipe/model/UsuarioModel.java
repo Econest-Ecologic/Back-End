@@ -36,6 +36,7 @@ public class UsuarioModel {
     @Column(name = "NUTELEFONE")
     private String nuTelefone;
 
+    //testeeee
 
     //ALTERACOES ROLOES
     //@Column(name = "TIPO")
