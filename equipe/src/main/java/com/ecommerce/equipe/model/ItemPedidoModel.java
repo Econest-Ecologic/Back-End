@@ -18,7 +18,10 @@ public class ItemPedidoModel {
     @Column(name = "QTITEM")
     private Integer qtItem;
 
-    @Column(name = "IDPRODUT")
+    //@Column(name = "IDPRODUTO")
+    //private ProdutoModel idProduto;
 
+    @Column(name = "PRECOUNITARIO")
+    private Double precoUnitario;
 
 }
