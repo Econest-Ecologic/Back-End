@@ -12,16 +12,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "TBUSUARIO")
 public class UsuarioModel {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "IDUSUARIO")
-    private Integer idUsuario;
+    @Column(name = "CDUSUARIO")
+    private Integer cdUsuario;
 
     @Column(name = "NMUSUARIO")
     private String nmUsuario;
 
     @Column(name = "NMEMAIL")
     private String nmEmail;
+
+    @Column(name = "NMSENHA")
+    private String nmSenha;
 
     @Column(name = "NUCPF")
     private String nuCpf;
@@ -32,6 +36,8 @@ public class UsuarioModel {
     @Column(name = "NUTELEFONE")
     private String nuTelefone;
 
+
+    //ALTERACOES ROLOES
     //@Column(name = "TIPO")
     //private enum tipo;
 
