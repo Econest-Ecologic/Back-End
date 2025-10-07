@@ -18,8 +18,6 @@ public class ProdutoModel {
     @Column(name = "CDPRODUTO")
     private Integer cdProduto;
 
-    //@Column(name = "IDESTOQUE")
-    //private Estoque idEstoque;
 
     @Column(name = "NMPRODUTO")
     private String nmProduto;
