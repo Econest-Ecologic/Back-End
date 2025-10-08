@@ -17,7 +17,7 @@ public class ItemPedidoModel {
     private Integer cdItemPedido;
 
     @Column(name = "QTITEM")
-    private Integer qtItem;
+    private Integer qtdItem;
 
     @OneToOne
     @JoinColumn(name = "CDPRODUTO")
