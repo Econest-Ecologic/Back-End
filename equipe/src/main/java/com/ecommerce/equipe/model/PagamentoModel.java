@@ -19,8 +19,8 @@ public class PagamentoModel {
     @Column(name = "CDPAGAMENTO")
     private Integer cdPagamento;
 
-    //@Column(name = "METODO")
-    //private enum metodo;
+    @Column(name = "METODO")
+    private MetodoPagamento metodo;
 
     @Column(name = "NUVALOR")
     private Double nuValor;

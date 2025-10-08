@@ -20,16 +20,17 @@ public class PedidoModel {
     @Column(name = "CDPEDIDO")
     private Integer cdPedido;
 
-
     @Column(name = "DTPEDIDO")
     private Date dtPedido;
 
-    //@Column(name = "STATUS")
-    //private enum status;
+    @Column(name = "STATUS")
+    private StatusPedido status;
 
     @Column(name = "VLTOTAL")
     private Double vlTotal;
 
     @Column(name = "VLFRETE")
     private Double vlFrete;
+
+
 }

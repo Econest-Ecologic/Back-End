@@ -20,11 +20,14 @@ public class AvaliacaoModel {
     @Column(name = "CDAVALIACAO")
     private Integer cdAvaliacao;
 
-    //@Column(name = "IDPRODUTO")
-    //private ProdutoModel idProduto;
+    @ManyToOne
+    @JoinColumn(name = "CDUSUARIO")
+    private UsuarioModel cdUsuario;
 
-    //@Column(name = "IDUSUARIO")
-    //private UsuarioModel idUsuario;
+    @ManyToOne
+    @JoinColumn(name = "CDPRODUTO")
+    @Column(name = "CDPRODUTO")
+    private ProdutoModel cdProduto;
 
     @Column(name = "NUNOTA")
     private Integer nuNota; // 1 - 5

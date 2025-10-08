@@ -20,7 +20,7 @@ public class ItemPedidoModel {
     private Integer qtItem;
 
     @OneToOne
-    @JoinColumn(name = "CDPRODUTO", referencedColumnName = "CDPRODUTO", unique = true)
+    @JoinColumn(name = "CDPRODUTO")
     @Column(name = "CDPRODUTO")
     private ProdutoModel cdProduto;
 
