@@ -16,15 +16,15 @@ public class ItemPedidoModel {
     @Column(name = "CDITEMPEDIDO")
     private Integer cdItemPedido;
 
-    @Column(name = "QTITEM")
+    @Column(name = "QTDITEM")
     private Integer qtdItem;
+
+    @Column(name = "PRECOUNITARIO")
+    private Double precoUnitario;
 
     @OneToOne
     @JoinColumn(name = "CDPRODUTO")
     @Column(name = "CDPRODUTO")
     private ProdutoModel cdProduto;
-
-    @Column(name = "PRECOUNITARIO")
-    private Double precoUnitario;
 
 }
