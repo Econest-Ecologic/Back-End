@@ -27,12 +27,12 @@ public class ProdutoModel {
 
     @Column(name = "PRECO")
     private Double  preco;
-git commit -
+
     @Column(name = "CATEGORIA")
     private String categoria;
 
     @Lob
-    @Column(name = "DSLINKIMG", nullable = false)
-    private byte[] dsLinkImag;
+    @Column(name = "IMGPRODUTO", nullable = true) //
+    private byte[] imgProduto;
 
 }

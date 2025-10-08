@@ -1,6 +1,5 @@
 package com.ecommerce.equipe.dto;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,7 +13,7 @@ public record ProdutoDto(
         String nmProduto,
 
         @NotBlank(message = "A descrição do produto não pode estar em branco.")
-        @Size (min = 3, max = 200, message = "A descrição do produto deve ter entre 3 e 100 caracteres.")
+        @Size (min = 3, max = 200, message = "A descrição do produto deve ter entre 3 e 200 caracteres.")
         String dscProduto,
 
         @NotNull(message = "Não é possível salvar um produto sem valor")
@@ -26,7 +25,6 @@ public record ProdutoDto(
         String categoria,
 
         //Para Upload da imagem.
-        MultipartFile imagem
+        MultipartFile imgproduto
 
-        ) {
-}
+        ) {}
