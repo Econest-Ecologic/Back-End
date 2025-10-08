@@ -13,14 +13,16 @@ public class ItemPedidoModel {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "IDITEMCARRINHO")
-    private Integer idItemCarrinho;
+    @Column(name = "CDITEMPEDIDO")
+    private Integer cdItemPedido;
 
     @Column(name = "QTITEM")
     private Integer qtItem;
 
-    //@Column(name = "IDPRODUTO")
-    //private ProdutoModel idProduto;
+    @OneToOne
+    @JoinColumn(name = "CDPRODUTO", referencedColumnName = "CDPRODUTO", unique = true)
+    @Column(name = "CDPRODUTO")
+    private ProdutoModel cdProduto;
 
     @Column(name = "PRECOUNITARIO")
     private Double precoUnitario;

@@ -15,12 +15,14 @@ public class EstoqueModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "IDESTOQUE")
-    private Integer idEstoque;
+    private Integer cdEstoque;
 
     @Column(name = "QTDESTOQUE")
     private Integer qtdEstoque;
 
-    //@Column(name = "CDPRODUTO")
-    //private ProdutoModel cdProduto;
+    @OneToOne
+    @JoinColumn(name = "CDPRODUTO", referencedColumnName = "CDPRODUTO", unique = true)
+    @Column(name = "CDPRODUTO")
+    private ProdutoModel cdProduto;
 
 }

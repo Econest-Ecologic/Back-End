@@ -17,8 +17,8 @@ public class AvaliacaoModel {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "IDAVALIACAO")
-    private Integer idAvaliacao;
+    @Column(name = "CDAVALIACAO")
+    private Integer cdAvaliacao;
 
     //@Column(name = "IDPRODUTO")
     //private ProdutoModel idProduto;
