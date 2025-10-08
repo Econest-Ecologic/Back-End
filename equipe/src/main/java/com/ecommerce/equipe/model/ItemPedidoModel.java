@@ -16,7 +16,7 @@ public class ItemPedidoModel {
     @Column(name = "CDITEMPEDIDO")
     private Integer cdItemPedido;
 
-    @Column(name = "QTITEM")
+    @Column(name = "QTDITEM")
     private Integer qtdItem;
 
     @OneToOne
