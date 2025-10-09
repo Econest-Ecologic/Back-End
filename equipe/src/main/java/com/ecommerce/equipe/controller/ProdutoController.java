@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import java.util.Optional;
+
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -24,6 +27,16 @@ public class ProdutoController {
     }
 
     @GetMapping
+    public ResponseEntity<List<ProdutoModel>> listar() {
+        return ResponseEntity.ok(produtoService.listar());
+    }
+
+    @GetMapping("/{cdProduto}")
+    public ResponseEntity<ProdutoModel> buscarProduto(@PathVariable("cdProduto") Integer cdProduto) {
+        Optional<ProdutoModel> produto = produtoService.buscar()
+
+    }
+
 
 
 }

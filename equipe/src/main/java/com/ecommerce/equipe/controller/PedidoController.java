@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -32,6 +33,10 @@ public class PedidoController {
 
     @GetMapping("/{cdPedido}")
     public ResponseEntity<Object> buscarPedido(@PathVariable("cdPedido") Integer cdPedido) {
-
+        Optional<PedidoModel> pedido = pedidoService.getPedido(idPedido);
+        if(pedido.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pedido não encontrado");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(pedido.get());
     }
 }
