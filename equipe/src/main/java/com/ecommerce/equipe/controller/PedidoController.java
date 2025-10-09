@@ -28,6 +28,10 @@ public class PedidoController {
     @GetMapping
     public ResponseEntity<List<PedidoModel>> listar() {
         return ResponseEntity.ok(pedidoService.listar());
+    }
+
+    @GetMapping("/{cdPedido}")
+    public ResponseEntity<Object> buscarPedido(@PathVariable("cdPedido") Integer cdPedido) {
 
     }
 }
