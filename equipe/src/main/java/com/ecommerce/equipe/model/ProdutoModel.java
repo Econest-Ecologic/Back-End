@@ -35,4 +35,6 @@ public class ProdutoModel {
     @Column(name = "IMGPRODUTO", nullable = true) //
     private byte[] imgProduto;
 
+    @Column(name = "FLATIVO")
+    private Boolean flAtivo = true;
 }

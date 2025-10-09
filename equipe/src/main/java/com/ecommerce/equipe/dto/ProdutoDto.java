@@ -14,7 +14,7 @@ public record ProdutoDto(
 
         @NotBlank(message = "A descrição do produto não pode estar em branco.")
         @Size (min = 3, max = 200, message = "A descrição do produto deve ter entre 3 e 200 caracteres.")
-        String dscProduto,
+        String dsProduto,
 
         @NotNull(message = "Não é possível salvar um produto sem valor")
         @DecimalMin(value = "0.01", message = "Não é possivel salvar um valor abaixo de 0.01")
@@ -25,6 +25,7 @@ public record ProdutoDto(
         String categoria,
 
         //Para Upload da imagem.
-        MultipartFile imgproduto
+        MultipartFile imgProduto,
 
+        Boolean flAtivo
         ) {}
