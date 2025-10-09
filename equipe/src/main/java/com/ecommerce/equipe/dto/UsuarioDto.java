@@ -36,6 +36,8 @@ public record UsuarioDto (
         @Pattern(regexp = "\\d{10,11}", message = "Telefone deve ter entre 10 e 11 dígitos numéricos")
         String nuTelefone,
 
-        List<RoleModel> roles
+        List<RoleModel> roles,
+
+        Boolean flAtivo
 ){
 }

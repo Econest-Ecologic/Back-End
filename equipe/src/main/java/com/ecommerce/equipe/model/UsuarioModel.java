@@ -43,4 +43,7 @@ public class UsuarioModel {
         joinColumns = @JoinColumn(name = "CDUSUARIO"),
         inverseJoinColumns = @JoinColumn(name = "CDROLE"))
     private Set<RoleModel> roles = new HashSet<>();
+
+    @Column(name = "FLATIVO")
+    private Boolean flAtivo = true;
 }
