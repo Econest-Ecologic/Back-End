@@ -32,5 +32,7 @@ public class PedidoModel {
     @Column(name = "VLFRETE")
     private Double vlFrete;
 
+    @Column(name = "ESTADO")
+    private Estado estado;
 
 }

@@ -2,7 +2,7 @@ package com.ecommerce.equipe.dto;
 
 import jakarta.validation.constraints.*;
 
-public record itemPedidoDto(
+public record ItemPedidoDto(
 
         @NotNull(message = "Não é possível salvar um produto sem quantidade")
         Integer qtdItem,

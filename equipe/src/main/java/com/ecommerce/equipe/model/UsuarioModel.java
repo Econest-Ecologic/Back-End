@@ -46,4 +46,7 @@ public class UsuarioModel {
 
     @Column(name = "FLATIVO")
     private Boolean flAtivo = true;
+
+    @Column(name = "IMGUSUARIO")
+    private byte[] imgUsuario;
 }

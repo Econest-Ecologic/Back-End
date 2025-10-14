@@ -3,86 +3,101 @@ package com.ecommerce.equipe.service;
 import com.ecommerce.equipe.dto.ProdutoDto;
 import com.ecommerce.equipe.model.ProdutoModel;
 import com.ecommerce.equipe.repository.ProdutoRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Base64;
+import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class ProdutoService {
-    private final ProdutoRepository produtoRepository;
 
-    public ProdutoDto salvar(ProdutoDto dto){
-        ProdutoModel produto = new ProdutoModel();
-        produto.setNmProduto(dto.nmProduto());
-        produto.setDsProduto(dto.dsProduto());
-        produto.setPreco(dto.preco());
-        produto.setCategoria(dto.categoria());
-        produto.setImgProduto(dto.imgProduto() != null ?
-                Base64.getDecoder().decode(dto.imgProduto()) : null);
-        produto.setFlAtivo(true);
+    @Autowired
+    private ProdutoRepository produtoRepository;
 
-        ProdutoModel salvo = produtoRepository.save(produto);
-        return toDto(salvo);
+    public ProdutoDto criarProduto(ProdutoDto dto) {
+        ProdutoModel model = converterParaModel(dto);
+        ProdutoModel salvo = produtoRepository.save(model);
+        return converterParaDto(salvo);
     }
 
-    public List<ProdutoDto> listarTodos() {
-        return produtoRepository.findAll().stream()
-                .filter(ProdutoModel::getFlAtivo)
-                .map(this::toDto)
-                .collect(Collectors.toList());
+    public List<ProdutoDto> listarProdutos() {
+        return produtoRepository.findAll()
+                .stream()
+                .map(this::converterParaDto)
+                .toList();
     }
 
-    public ProdutoDto buscarPorId(Integer cdProduto){
-        ProdutoModel produto = produtoRepository.findById(cdProduto)
-                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
-        if(!produto.getFlAtivo()){
-            throw new RuntimeException("Produto inativo");
-        }
-        return toDto(produto);
+    public ProdutoDto buscarPorId(Integer id) {
+        ProdutoModel produto = produtoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado com o ID: " + id));
+        return converterParaDto(produto);
     }
 
-    public ProdutoDto atualizar(Integer cdProduto, ProdutoDto dto){
-        ProdutoModel produto = produtoRepository.findById(cdProduto)
-                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+    public ProdutoDto atualizarProduto(Integer id, ProdutoDto dto) {
+        ProdutoModel produto = produtoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado com o ID: " + id));
 
         produto.setNmProduto(dto.nmProduto());
         produto.setDsProduto(dto.dsProduto());
         produto.setPreco(dto.preco());
         produto.setCategoria(dto.categoria());
+        produto.setFlAtivo(dto.flAtivo());
 
-        if(dto.imgProduto() != null && !dto.imgProduto().isBlank()){
-            produto.setImgProduto(Base64.getDecoder().decode(dto.imgProduto()));
+        MultipartFile imagem = dto.imgProduto();
+        if (imagem != null && !imagem.isEmpty()) {
+            try {
+                produto.setImgProduto(imagem.getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException("Erro ao atualizar imagem do produto.", e);
+            }
         }
 
         ProdutoModel atualizado = produtoRepository.save(produto);
-        return toDto(atualizado);
+        return converterParaDto(atualizado);
     }
 
-    public void deletar(Integer cdProduto){
-        ProdutoModel produto = produtoRepository.findById(cdProduto)
-                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
+    public void inativarProduto(Integer cd) {
+        ProdutoModel produto = produtoRepository.findById(cd)
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado com o ID: " + cd));
 
         produto.setFlAtivo(false);
         produtoRepository.save(produto);
     }
 
-    private ProdutoDto toDto(ProdutoModel produto){
-        String imagemBase64 = produto.getImgProduto() != null
-                ? Base64.getEncoder().encodeToString(produto.getImgProduto())
-                : null;
 
+
+    private ProdutoModel converterParaModel(ProdutoDto dto) {
+        ProdutoModel produto = new ProdutoModel();
+
+        produto.setNmProduto(dto.nmProduto());
+        produto.setDsProduto(dto.dsProduto());
+        produto.setPreco(dto.preco());
+        produto.setCategoria(dto.categoria());
+        produto.setFlAtivo(dto.flAtivo() != null ? dto.flAtivo() : true);
+
+        MultipartFile imagem = dto.imgProduto();
+        if (imagem != null && !imagem.isEmpty()) {
+            try {
+                produto.setImgProduto(imagem.getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException("Erro ao processar imagem do produto.", e);
+            }
+        }
+
+        return produto;
+    }
+
+    private ProdutoDto converterParaDto(ProdutoModel model) {
         return new ProdutoDto(
-                produto.getCdProduto(),
-                produto.getNmProduto(),
-                produto.getDsProduto(),
-                produto.getPreco(),
-                produto.getCategoria(),
-                imagemBase64,
-                produto.getFlAtivo()
+                model.getNmProduto(),
+                model.getDsProduto(),
+                model.getPreco(),
+                model.getCategoria(),
+                null, // não retornamos o MultipartFile
+                model.getFlAtivo()
         );
     }
 }

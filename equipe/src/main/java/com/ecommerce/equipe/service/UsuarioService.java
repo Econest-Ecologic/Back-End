@@ -19,59 +19,91 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final RoleRepository roleRepository;
-    //private final PasswordEncoder passwordEncoder;
-
 
     public UsuarioDto salvar(UsuarioDto dto) {
-        UsuarioModel usuario = new UsuarioModel();
-        usuario.setNmUsuario(dto.nmUsuario());
-        usuario.setNmEmail(dto.nmEmail());
-        usuario.setNmSenha(dto.nmSenha());
-        usuario.setNuCpf(dto.nuCpf());
-        usuario.setDsEndereco(dto.dsEndereco());
-        usuario.setNuTelefone(dto.nuTelefone());
-
-        Set<RoleModel> roles = new HashSet<>();
-        if (dto.roles() != null && !dto.roles().isEmpty()) {
-            roles.addAll(dto.roles());
-        } else {
-            RoleModel roleUser = roleRepository.findByNmRole("USER")
-                    .orElseThrow(() -> new RuntimeException("Role USER não encontrada."));
-            roles.add(roleUser);
-        }
-        usuario.setRoles(roles);
-
-        UsuarioModel salvo = usuarioRepository.save(usuario);
-        return toDto(salvo);
+        UsuarioModel model = converterParaModel(dto);
+        UsuarioModel salvo = usuarioRepository.save(model);
+        return converterParaDto(salvo);
     }
 
     public List<UsuarioDto> listarTodos() {
         return usuarioRepository.findAll().stream()
                 .filter(UsuarioModel::getFlAtivo)
-                .map(this::toDto)
+                .map(this::converterParaDto)
                 .collect(Collectors.toList());
     }
 
     public UsuarioDto buscarPorId(Integer cdUsuario) {
         UsuarioModel usuario = usuarioRepository.findById(cdUsuario)
-                .orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
-        return toDto(usuario);
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        return converterParaDto(usuario);
     }
 
     public UsuarioDto atualizar(Integer cdUsuario, UsuarioDto dto) {
         UsuarioModel usuario = usuarioRepository.findById(cdUsuario)
-                .orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
         usuario.setNmUsuario(dto.nmUsuario());
         usuario.setNmEmail(dto.nmEmail());
+
         if (dto.nmSenha() != null && !dto.nmSenha().isBlank()) {
             usuario.setNmSenha(dto.nmSenha());
         }
+
         usuario.setNuCpf(dto.nuCpf());
         usuario.setDsEndereco(dto.dsEndereco());
         usuario.setNuTelefone(dto.nuTelefone());
 
+        usuario.setRoles(obterRoles(dto));
+
+        UsuarioModel atualizado = usuarioRepository.save(usuario);
+        return converterParaDto(atualizado);
+    }
+
+    public void inativar(Integer cdUsuario) {
+        UsuarioModel usuario = usuarioRepository.findById(cdUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        usuario.setFlAtivo(false);
+        usuarioRepository.save(usuario);
+    }
+
+
+    private UsuarioModel converterParaModel(UsuarioDto dto) {
+        UsuarioModel model = new UsuarioModel();
+
+        model.setNmUsuario(dto.nmUsuario());
+        model.setNmEmail(dto.nmEmail());
+        model.setNmSenha(dto.nmSenha());
+        model.setNuCpf(dto.nuCpf());
+        model.setDsEndereco(dto.dsEndereco());
+        model.setNuTelefone(dto.nuTelefone());
+        model.setFlAtivo(dto.flAtivo() != null ? dto.flAtivo() : true);
+
+        model.setRoles(obterRoles(dto));
+
+        return model;
+    }
+
+    private UsuarioDto converterParaDto(UsuarioModel model) {
+        List<RoleModel> roles = model.getRoles().stream().toList();
+
+        return new UsuarioDto(
+                model.getCdUsuario(),
+                model.getNmUsuario(),
+                model.getNmEmail(),
+                null,
+                model.getNuCpf(),
+                model.getDsEndereco(),
+                model.getNuTelefone(),
+                roles,
+                model.getFlAtivo()
+        );
+    }
+
+    private Set<RoleModel> obterRoles(UsuarioDto dto) {
         Set<RoleModel> roles = new HashSet<>();
+
         if (dto.roles() != null && !dto.roles().isEmpty()) {
             roles.addAll(dto.roles());
         } else {
@@ -79,32 +111,7 @@ public class UsuarioService {
                     .orElseThrow(() -> new RuntimeException("Role USER não encontrada."));
             roles.add(roleUser);
         }
-        usuario.setRoles(roles);
 
-        UsuarioModel atualizado = usuarioRepository.save(usuario);
-        return toDto(atualizado);
-    }
-
-    public void deletar(Integer cdUsuario) {
-        UsuarioModel usuario = usuarioRepository.findById(cdUsuario)
-                .orElseThrow(() -> new RuntimeException(("Usuario não encontrado")));
-
-                usuario.setFlAtivo(false);
-                usuarioRepository.save(usuario);
-    }
-
-    private UsuarioDto toDto(UsuarioModel usuario) {
-        List<RoleModel> roles = usuario.getRoles().stream().toList();
-        return new UsuarioDto(
-                usuario.getCdUsuario(),
-                usuario.getNmUsuario(),
-                usuario.getNmEmail(),
-                null, // senha não é retornada
-                usuario.getNuCpf(),
-                usuario.getDsEndereco(),
-                usuario.getNuTelefone(),
-                roles,
-                usuario.getFlAtivo()
-        );
+        return roles;
     }
 }
