@@ -33,7 +33,7 @@ public class ProdutoController {
 
     @GetMapping("/{cdProduto}")
     public ResponseEntity<ProdutoModel> buscarProduto(@PathVariable("cdProduto") Integer cdProduto) {
-        Optional<ProdutoModel> produto = produtoService.buscar()
+        Optional<ProdutoModel> produto = produtoService.buscarProduto()
 
     }
 
