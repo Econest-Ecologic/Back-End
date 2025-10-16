@@ -53,7 +53,14 @@ public class ProdutoController {
     }
 
     @DeleteMapping("/{cdProduto")
-    public ResponseEntity<String> inativar
+    public ResponseEntity<String> inativar(@PathVariable Integer cdProduto) {
+        try{
+            produtoService.inativarProduto(cdProduto);
+            return ResponseEntity.ok("Produto Inativado com sucesso");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 
 
 

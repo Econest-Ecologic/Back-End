@@ -30,7 +30,7 @@ public class PedidoService {
         return pedidoRepository.findAll();
     }
 
-    public Optional<PedidoModel> buscarPorCd(Integer cdPedido) {
+    public Optional<PedidoModel> buscarPorId(Integer cdPedido) {
         return  pedidoRepository.findById(cdPedido);
     }
 
