@@ -15,5 +15,5 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
 
     @PostMapping
-
+    public ResponseEntity
 }

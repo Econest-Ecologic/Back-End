@@ -55,6 +55,7 @@ public class UsuarioService {
         usuario.setNuTelefone(dto.nuTelefone());
 
         usuario.setRoles(obterRoles(dto));
+        usuario.setEstado(dto.estado());
 
         UsuarioModel atualizado = usuarioRepository.save(usuario);
         return converterParaDto(atualizado);
@@ -97,7 +98,8 @@ public class UsuarioService {
                 model.getDsEndereco(),
                 model.getNuTelefone(),
                 roles,
-                model.getFlAtivo()
+                model.getFlAtivo(),
+                model.getEstado()
         );
     }
 
