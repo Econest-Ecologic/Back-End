@@ -73,4 +73,14 @@ public class PedidoService {
                 pedidoModel.getVlFrete()
         );
     }
+
+    public void calcularValorTotal() {
+        double subtotal = 0.0;
+        for (ItemPedidoModel item : itens) {
+            subtotal += item.calcularSubtotal();
+        }
+        this.vlFrete = estado.getValorFrete();
+        this.vlTotal = subtotal + vlFrete;
+    }
+
 }

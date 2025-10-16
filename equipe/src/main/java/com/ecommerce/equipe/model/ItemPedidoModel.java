@@ -24,7 +24,6 @@ public class ItemPedidoModel {
 
     @OneToOne
     @JoinColumn(name = "CDPRODUTO")
-    @Column(name = "CDPRODUTO")
     private ProdutoModel cdProduto;
 
 }
