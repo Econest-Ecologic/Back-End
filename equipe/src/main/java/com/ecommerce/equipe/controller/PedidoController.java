@@ -33,10 +33,30 @@ public class PedidoController {
 
     @GetMapping("/{cdPedido}")
     public ResponseEntity<Object> buscarPedido(@PathVariable("cdPedido") Integer cdPedido) {
-        Optional<PedidoModel> pedido = pedidoService.getPedido(idPedido);
+        Optional<PedidoModel> pedido = pedidoService.buscarPorId(cdPedido);
         if(pedido.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pedido não encontrado");
         }
         return ResponseEntity.status(HttpStatus.OK).body(pedido.get());
+    }
+
+    @PutMapping("/{cdPedido}")
+    public ResponseEntity<Object> atualizar(@PathVariable Integer cdPedido, @RequestBody @Valid PedidoDto pedidoDto) {
+        try{
+            PedidoModel atualizado = pedidoService.atualizar(cdPedido, pedidoDto);
+            return ResponseEntity.ok(atualizado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{cdPedido}")
+    public ResponseEntity<String> cancelar(@PathVariable Integer cdPedido) {
+        try{
+            pedidoService.cancelarPedido(cdPedido);
+            return ResponseEntity.ok("Pedido atualizado com sucesso");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }
