@@ -1,5 +1,6 @@
 package com.ecommerce.equipe.dto;
 
+import com.ecommerce.equipe.model.Estado;
 import com.ecommerce.equipe.model.StatusPedido;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -25,5 +26,6 @@ public record PedidoDto(
         @NotNull(message = "O valor do frete não pode ser nulo")
         @Positive(message = "O valor do frete deve ser positivo")
         Double vlFrete
+
 
 ) { }

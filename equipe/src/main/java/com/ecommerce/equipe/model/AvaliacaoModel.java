@@ -26,7 +26,6 @@ public class AvaliacaoModel {
 
     @ManyToOne
     @JoinColumn(name = "CDPRODUTO")
-    @Column(name = "CDPRODUTO")
     private ProdutoModel cdProduto;
 
     @Column(name = "NUNOTA")

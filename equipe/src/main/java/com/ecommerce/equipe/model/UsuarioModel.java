@@ -49,4 +49,7 @@ public class UsuarioModel {
 
     @Column(name = "IMGUSUARIO")
     private byte[] imgUsuario;
+
+    @Column(name = "ESTADO")
+    private Estado estado;
 }

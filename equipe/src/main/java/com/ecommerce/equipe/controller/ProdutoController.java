@@ -6,6 +6,7 @@ import com.ecommerce.equipe.service.ProdutoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -20,22 +21,39 @@ public class ProdutoController {
     @Autowired
     private ProdutoService produtoService;
 
-    @PostMapping
-    public ResponseEntity<ProdutoModel> salvar(@RequestBody @Valid ProdutoDto produtoDto) {
-         ProdutoModel produto = produtoService.salvar(produtoDto);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ProdutoDto> salvar(@ModelAttribute @Valid ProdutoDto produtoDto) {
+         ProdutoDto produto = produtoService.criarProduto(produtoDto);
          return ResponseEntity.status(HttpStatus.CREATED).body(produto);
     }
 
     @GetMapping
-    public ResponseEntity<List<ProdutoModel>> listar() {
-        return ResponseEntity.ok(produtoService.listar());
+    public ResponseEntity<List<ProdutoDto>> listar() {
+        return ResponseEntity.ok(produtoService.listarProdutos());
     }
 
     @GetMapping("/{cdProduto}")
-    public ResponseEntity<ProdutoModel> buscarProduto(@PathVariable("cdProduto") Integer cdProduto) {
-        Optional<ProdutoModel> produto = produtoService.buscarProduto()
-
+    public ResponseEntity<Object> buscarProduto(@PathVariable("cdProduto") Integer cdProduto) {
+        try {
+            ProdutoDto produto = produtoService.buscarPorId(cdProduto);
+            return ResponseEntity.ok(produto);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
+
+    @PutMapping(value = "/{cdProduto}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> atualizar(@PathVariable Integer cdProduto, @ModelAttribute @Valid ProdutoDto produtoDto) {
+        try {
+            ProdutoDto atualizado = produtoService.atualizarProduto(cdProduto, produtoDto);
+            return ResponseEntity.ok(atualizado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{cdProduto")
+    public ResponseEntity<String> inativar
 
 
 

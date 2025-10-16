@@ -1,5 +1,6 @@
 package com.ecommerce.equipe.dto;
 
+import com.ecommerce.equipe.model.Estado;
 import com.ecommerce.equipe.model.RoleModel;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -38,6 +39,9 @@ public record UsuarioDto (
 
         List<RoleModel> roles,
 
-        Boolean flAtivo
+        Boolean flAtivo,
+
+        @NotBlank(message = "Estado é obrigatório")
+        Estado estado
 ){
 }
