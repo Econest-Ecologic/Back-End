@@ -1,4 +1,4 @@
-package com.trier.clothestore.security;
+package com.ecommerce.equipe.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
