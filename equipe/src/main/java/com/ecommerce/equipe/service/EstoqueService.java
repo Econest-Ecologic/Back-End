@@ -76,6 +76,15 @@ public class EstoqueService {
         return converterParaDto(atualizado);
     }
 
+    public boolean verificarDisponibilidade(Integer cdProduto, Integer quantidade) {
+        try {
+            EstoqueDto estoque = buscarPorProduto(cdProduto);
+            return estoque.qtdEstoque() >= quantidade;
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
+
     private EstoqueModel converterParaModel(EstoqueDto dto) {
         EstoqueModel model = new EstoqueModel();
 
@@ -92,7 +101,7 @@ public class EstoqueService {
         return new EstoqueDto(
                 model.getCdEstoque(),
                 model.getQtdEstoque(),
-                model.getCdEstoque()
+                model.getCdProduto().getCdProduto()
         );
     }
 }

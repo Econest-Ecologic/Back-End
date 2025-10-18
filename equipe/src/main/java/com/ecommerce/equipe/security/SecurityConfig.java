@@ -37,13 +37,33 @@ public class SecurityConfig {
         JwtRequestFilter jwtRequestFilter = new JwtRequestFilter(jwtUtil, userDetailsService);
 
         http
-                .csrf(AbstractHttpConfigurer::disable) // Desativa proteção CSRF para APIs REST (não aplicável a APIs que não mantêm estado)
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                                .requestMatchers(HttpMethod.POST, "/api/v1/usuario").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/v1/usuario/login").permitAll()
-                                .requestMatchers("/api/v1/produto/**").authenticated()
-                                .requestMatchers("/api/v1/pedido/**").authenticated()
-                                .anyRequest().permitAll()
+                        // Rotas públicas de autenticação
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/register").permitAll()
+
+                        // Rotas de produtos (público pode ver, só admin cadastra)
+                        .requestMatchers(HttpMethod.GET, "/api/v1/produto/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/produto/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/produto/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/produto/**").hasAuthority("ADMIN")
+
+                        // Rotas de pedido (usuário autenticado)
+                        .requestMatchers("/api/v1/pedido/**").authenticated()
+
+                        // Rotas de avaliação (usuário autenticado)
+                        .requestMatchers("/api/v1/avaliacao/**").authenticated()
+
+                        // Rotas de usuário (admin)
+                        .requestMatchers("/api/v1/usuario/**").hasAuthority("ADMIN")
+
+                        // Rotas de estoque (admin cadastra, usuário pode consultar)
+                        .requestMatchers(HttpMethod.GET, "/api/v1/estoque/**").permitAll()
+                        .requestMatchers("/api/v1/estoque/**").hasAuthority("ADMIN")
+
+                        // Qualquer outra requisição precisa estar autenticada
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -55,10 +75,8 @@ public class SecurityConfig {
                             response.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"Token required\"}");
                         })
                 )
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
-                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); // Adiciona o filtro JWT antes do filtro de autenticação padrão
-
-        // Retorna a configuração do filtro de segurança construída
         return http.build();
     }
 
