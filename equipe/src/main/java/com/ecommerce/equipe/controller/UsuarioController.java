@@ -39,7 +39,7 @@ public class UsuarioController {
         }
     }
 
-    @PutMapping("/{cdUsuario")
+    @PutMapping("/{cdUsuario}")
     public ResponseEntity<Object> atualizar(@PathVariable Integer cdUsuario, @RequestBody @Valid UsuarioDto usuarioDto) {
         try{
             UsuarioDto usuario = usuarioService.atualizar(cdUsuario, usuarioDto);
