@@ -26,4 +26,8 @@ public class ItemPedidoModel {
     @JoinColumn(name = "CDPRODUTO")
     private ProdutoModel cdProduto;
 
+    @ManyToOne
+    @JoinColumn(name = "CDPEDIDO")
+    private PedidoModel pedido;  // De qual pedido este item faz parte
+
 }
