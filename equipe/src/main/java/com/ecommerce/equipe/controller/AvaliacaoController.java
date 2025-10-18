@@ -32,7 +32,7 @@ public class AvaliacaoController {
         return ResponseEntity.ok(avaliacaoService.listarTodos());
     }
 
-    @GetMapping("/{cdAvaliacao")
+    @GetMapping("/{cdAvaliacao}")
     public ResponseEntity<Object> buscar(@PathVariable("cdAvaliacao")Integer cdAvaliacao) {
         try {
             AvaliacaoDto avaliacao = avaliacaoService.buscarPorId(cdAvaliacao);
@@ -42,7 +42,7 @@ public class AvaliacaoController {
         }
     }
 
-    @GetMapping("/produto/{cdProduto")
+    @GetMapping("/produto/{cdProduto}")
     public ResponseEntity<List<AvaliacaoDto>> buscarPorProduto(@PathVariable("cdProduto")Integer cdProduto) {
         return ResponseEntity.ok(Collections.singletonList(avaliacaoService.buscarPorProduto(cdProduto)));
     }
