@@ -14,7 +14,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -46,13 +45,13 @@ public class AuthService {
             throw new RuntimeException("Usuário inativo");
         }
 
-        // Gera o token JWT
-        String token = jwtUtil.generateToken(usuario.getNmEmail());
-
         // Extrai os nomes das roles
         List<String> roles = usuario.getRoles().stream()
                 .map(RoleModel::getNmRole)
                 .collect(Collectors.toList());
+
+        // Gera o token JWT
+        String token = jwtUtil.generateToken(usuario.getNmEmail(), roles);
 
         return new LoginResponseDto(
                 token,
@@ -93,13 +92,13 @@ public class AuthService {
         // Salva o usuário
         UsuarioModel salvo = usuarioRepository.save(novoUsuario);
 
-        // Gera o token JWT
-        String token = jwtUtil.generateToken(salvo.getNmEmail());
-
         // Extrai os nomes das roles
         List<String> rolesNomes = salvo.getRoles().stream()
                 .map(RoleModel::getNmRole)
                 .collect(Collectors.toList());
+
+        // Gera o token JWT
+        String token = jwtUtil.generateToken(salvo.getNmEmail(), rolesNomes);
 
         return new LoginResponseDto(
                 token,

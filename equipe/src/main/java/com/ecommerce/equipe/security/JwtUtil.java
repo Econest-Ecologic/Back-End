@@ -5,25 +5,35 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
-
-import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class JwtUtil {
 
     private final String secretKey = "sua-chave-secreta-super-segura-que-deve-ser-bem-longa";
 
-
-    // Gera um token JWT com o nome de usuário e validade de 1 hora
+    // Método original só com username
     public String generateToken(String username) {
         return Jwts.builder()
-                .setSubject(username) // Define o nome de usuário como o assunto do token
-                .setIssuedAt(new Date()) // Define a data e hora de emissão
+                .setSubject(username)
+                .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256) // Converte a chave secreta em bytes e assina o token com ela
-                .compact(); // Constrói o token JWT
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    // Novo método que recebe username + roles
+    public String generateToken(String username, List<String> roles) {
+        return Jwts.builder()
+                .setSubject(username)
+                .claim("authorities", roles)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     // Extrai as claims do token JWT (informações adicionais do token)
@@ -46,7 +56,6 @@ public class JwtUtil {
 
     // Valida o token JWT verificando o nome de usuário e se o token não está expirado
     public boolean validateToken(String token, String username) {
-
         final String extractedUsername = extractUsername(token);
         return (extractedUsername.equals(username) && !isTokenExpired(token));
     }

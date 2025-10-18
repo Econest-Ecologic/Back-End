@@ -60,7 +60,9 @@ public class SecurityConfig {
 
                         // Rotas de estoque (admin cadastra, usuário pode consultar)
                         .requestMatchers(HttpMethod.GET, "/api/v1/estoque/**").permitAll()
-                        .requestMatchers("/api/v1/estoque/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/estoque/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/estoque/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/estoque/**").hasAuthority("ADMIN")
 
                         // Rotas de pagamento (usuário autenticado)
                         .requestMatchers("/api/v1/pagamento/**").authenticated()
