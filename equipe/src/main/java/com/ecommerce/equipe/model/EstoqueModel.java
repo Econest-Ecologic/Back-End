@@ -22,7 +22,6 @@ public class EstoqueModel {
 
     @OneToOne
     @JoinColumn(name = "CDPRODUTO")
-    @Column(name = "CDPRODUTO")
     private ProdutoModel cdProduto;
 
 }
