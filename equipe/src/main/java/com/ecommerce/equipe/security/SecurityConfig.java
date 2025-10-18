@@ -62,6 +62,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/estoque/**").permitAll()
                         .requestMatchers("/api/v1/estoque/**").hasAuthority("ADMIN")
 
+                        // Rotas de pagamento (usuário autenticado)
+                        .requestMatchers("/api/v1/pagamento/**").authenticated()
+
                         // Qualquer outra requisição precisa estar autenticada
                         .anyRequest().authenticated()
                 )

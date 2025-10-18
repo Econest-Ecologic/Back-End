@@ -54,9 +54,17 @@ public class AvaliacaoService {
         return converterParaDto(avaliacao);
     }
 
+    // NOVO MÉTODO: Lista TODAS as avaliações de um produto
+    public List<AvaliacaoDto> listarPorProduto(Integer cdProduto) {
+        return avaliacaoRepository.findAll().stream()
+                .filter(e -> e.getCdProduto().getCdProduto().equals(cdProduto))
+                .map(this::converterParaDto)
+                .collect(Collectors.toList());
+    }
+
     public AvaliacaoDto atualizar(Integer cdAvaliacao, AvaliacaoDto dto) {
         AvaliacaoModel model = avaliacaoRepository.findById(cdAvaliacao)
-                .orElseThrow(() -> new RuntimeException("Avaliação não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Avaliação não encontrada"));
 
         model.setDtAvaliacao(dto.dtAvaliacao());
         model.setNuNota(dto.nuNota());
@@ -79,6 +87,7 @@ public class AvaliacaoService {
         model.setDtAvaliacao(avaliacaoDto.dtAvaliacao() != null ? avaliacaoDto.dtAvaliacao() : new Timestamp(System.currentTimeMillis()));
         return model;
     }
+
     private AvaliacaoDto converterParaDto(AvaliacaoModel model) {
         return new AvaliacaoDto(
                 model.getCdAvaliacao(),

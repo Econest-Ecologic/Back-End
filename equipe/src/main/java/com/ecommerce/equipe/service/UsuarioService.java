@@ -6,6 +6,7 @@ import com.ecommerce.equipe.model.UsuarioModel;
 import com.ecommerce.equipe.repository.RoleRepository;
 import com.ecommerce.equipe.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -19,6 +20,7 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UsuarioDto salvar(UsuarioDto dto) {
         UsuarioModel model = converterParaModel(dto);
@@ -47,7 +49,7 @@ public class UsuarioService {
         usuario.setNmEmail(dto.nmEmail());
 
         if (dto.nmSenha() != null && !dto.nmSenha().isBlank()) {
-            usuario.setNmSenha(dto.nmSenha());
+            usuario.setNmSenha(passwordEncoder.encode(dto.nmSenha()));
         }
 
         usuario.setNuCpf(dto.nuCpf());
@@ -69,17 +71,17 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
-
     private UsuarioModel converterParaModel(UsuarioDto dto) {
         UsuarioModel model = new UsuarioModel();
 
         model.setNmUsuario(dto.nmUsuario());
         model.setNmEmail(dto.nmEmail());
-        model.setNmSenha(dto.nmSenha());
+        model.setNmSenha(passwordEncoder.encode(dto.nmSenha())); // CORRIGIDO: Criptografa a senha
         model.setNuCpf(dto.nuCpf());
         model.setDsEndereco(dto.dsEndereco());
         model.setNuTelefone(dto.nuTelefone());
         model.setFlAtivo(dto.flAtivo() != null ? dto.flAtivo() : true);
+        model.setEstado(dto.estado());
 
         model.setRoles(obterRoles(dto));
 

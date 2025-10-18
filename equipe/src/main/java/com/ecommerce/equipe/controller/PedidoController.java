@@ -22,7 +22,7 @@ public class PedidoController {
 
     @PostMapping
     public ResponseEntity<PedidoModel> salvar(@RequestBody @Valid PedidoDto pedidoDto) {
-        PedidoModel pedido = pedidoService.salvar(pedidoDto); // Criar metodo no service
+        PedidoModel pedido = pedidoService.salvar(pedidoDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(pedido);
     }
 
@@ -34,15 +34,22 @@ public class PedidoController {
     @GetMapping("/{cdPedido}")
     public ResponseEntity<Object> buscarPedido(@PathVariable("cdPedido") Integer cdPedido) {
         Optional<PedidoModel> pedido = pedidoService.buscarPorId(cdPedido);
-        if(pedido.isEmpty()) {
+        if (pedido.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pedido não encontrado");
         }
         return ResponseEntity.status(HttpStatus.OK).body(pedido.get());
     }
 
+    // NOVO: Buscar pedidos por usuário (HISTÓRICO)
+    @GetMapping("/usuario/{cdUsuario}")
+    public ResponseEntity<List<PedidoModel>> listarPorUsuario(@PathVariable Integer cdUsuario) {
+        List<PedidoModel> pedidos = pedidoService.listarPorUsuario(cdUsuario);
+        return ResponseEntity.ok(pedidos);
+    }
+
     @PutMapping("/{cdPedido}")
     public ResponseEntity<Object> atualizar(@PathVariable Integer cdPedido, @RequestBody @Valid PedidoDto pedidoDto) {
-        try{
+        try {
             PedidoModel atualizado = pedidoService.atualizar(cdPedido, pedidoDto);
             return ResponseEntity.ok(atualizado);
         } catch (RuntimeException e) {
@@ -52,11 +59,11 @@ public class PedidoController {
 
     @DeleteMapping("/{cdPedido}")
     public ResponseEntity<String> cancelar(@PathVariable Integer cdPedido) {
-        try{
+        try {
             pedidoService.cancelarPedido(cdPedido);
-            return ResponseEntity.ok("Pedido atualizado com sucesso");
+            return ResponseEntity.ok("Pedido cancelado com sucesso");
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.ecommerce.equipe.service;
 
-
 import com.ecommerce.equipe.dto.PedidoDto;
 import com.ecommerce.equipe.model.ItemPedidoModel;
 import com.ecommerce.equipe.model.PedidoModel;
@@ -15,7 +14,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class PedidoService {
-    private final  PedidoRepository pedidoRepository;
+    private final PedidoRepository pedidoRepository;
 
     public PedidoModel salvar(PedidoDto pedidoDto) {
         PedidoModel model = converterParaModel(pedidoDto);
@@ -27,7 +26,12 @@ public class PedidoService {
     }
 
     public Optional<PedidoModel> buscarPorId(Integer cdPedido) {
-        return  pedidoRepository.findById(cdPedido);
+        return pedidoRepository.findById(cdPedido);
+    }
+
+    // NOVO: Listar pedidos por usuário (HISTÓRICO)
+    public List<PedidoModel> listarPorUsuario(Integer cdUsuario) {
+        return pedidoRepository.findByUsuarioCdUsuario(cdUsuario);
     }
 
     public PedidoModel atualizar(Integer cdPedido, PedidoDto pedidoDto) {
@@ -70,21 +74,17 @@ public class PedidoService {
         );
     }
 
-
     public void calcularValorTotal(Integer cdPedido) {
         PedidoModel pedido = pedidoRepository.findById(cdPedido)
                 .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
 
         double subtotal = 0.0;
 
-        // Somar todos os itens do pedido
         for (ItemPedidoModel item : pedido.getItens()) {
             subtotal += item.getQtdItem() * item.getPrecoUnitario();
         }
 
-        // Calcular total com frete
         pedido.setVlTotal(subtotal + pedido.getVlFrete());
         pedidoRepository.save(pedido);
     }
-
 }
