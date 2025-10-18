@@ -4,7 +4,9 @@ import com.ecommerce.equipe.dto.PedidoDto;
 import com.ecommerce.equipe.model.ItemPedidoModel;
 import com.ecommerce.equipe.model.PedidoModel;
 import com.ecommerce.equipe.model.StatusPedido;
+import com.ecommerce.equipe.model.UsuarioModel;
 import com.ecommerce.equipe.repository.PedidoRepository;
+import com.ecommerce.equipe.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +17,15 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PedidoService {
     private final PedidoRepository pedidoRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    public PedidoModel salvar(PedidoDto pedidoDto) {
+    // CORRIGIDO: Agora recebe o ID do usuário
+    public PedidoModel salvar(Integer cdUsuario, PedidoDto pedidoDto) {
+        UsuarioModel usuario = usuarioRepository.findById(cdUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
         PedidoModel model = converterParaModel(pedidoDto);
+        model.setUsuario(usuario); // Vincula o usuário ao pedido
         return pedidoRepository.save(model);
     }
 
@@ -29,7 +37,6 @@ public class PedidoService {
         return pedidoRepository.findById(cdPedido);
     }
 
-    // NOVO: Listar pedidos por usuário (HISTÓRICO)
     public List<PedidoModel> listarPorUsuario(Integer cdUsuario) {
         return pedidoRepository.findByUsuarioCdUsuario(cdUsuario);
     }

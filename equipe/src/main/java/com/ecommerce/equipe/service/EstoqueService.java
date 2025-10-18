@@ -36,10 +36,9 @@ public class EstoqueService {
         return converterParaDto(estoque);
     }
 
+    // CORRIGIDO: Agora usa o método do repository
     public EstoqueDto buscarPorProduto(Integer cdProduto) {
-        EstoqueModel estoque = estoqueRepository.findAll().stream()
-                .filter(e -> e.getCdProduto().getCdProduto().equals(cdProduto))
-                .findFirst()
+        EstoqueModel estoque = estoqueRepository.findByCdProdutoCdProduto(cdProduto)
                 .orElseThrow(() -> new RuntimeException("Estoque não encontrado para este produto"));
         return converterParaDto(estoque);
     }

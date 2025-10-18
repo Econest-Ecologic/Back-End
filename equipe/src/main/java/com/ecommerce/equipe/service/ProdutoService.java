@@ -3,7 +3,7 @@ package com.ecommerce.equipe.service;
 import com.ecommerce.equipe.dto.ProdutoDto;
 import com.ecommerce.equipe.model.ProdutoModel;
 import com.ecommerce.equipe.repository.ProdutoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,10 +11,10 @@ import java.io.IOException;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor // Padronizado com Lombok
 public class ProdutoService {
 
-    @Autowired
-    private ProdutoRepository produtoRepository;
+    private final ProdutoRepository produtoRepository;
 
     public ProdutoDto criarProduto(ProdutoDto dto) {
         ProdutoModel model = converterParaModel(dto);
@@ -58,7 +58,6 @@ public class ProdutoService {
         return converterParaDto(atualizado);
     }
 
-
     public void inativarProduto(Integer cd) {
         ProdutoModel produto = produtoRepository.findById(cd)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado com o ID: " + cd));
@@ -66,8 +65,6 @@ public class ProdutoService {
         produto.setFlAtivo(false);
         produtoRepository.save(produto);
     }
-
-
 
     private ProdutoModel converterParaModel(ProdutoDto dto) {
         ProdutoModel produto = new ProdutoModel();
@@ -92,11 +89,12 @@ public class ProdutoService {
 
     private ProdutoDto converterParaDto(ProdutoModel model) {
         return new ProdutoDto(
+                model.getCdProduto(), // CORRIGIDO: Agora retorna o ID
                 model.getNmProduto(),
                 model.getDsProduto(),
                 model.getPreco(),
                 model.getCategoria(),
-                null, // não retornamos o MultipartFile
+                null,
                 model.getFlAtivo()
         );
     }

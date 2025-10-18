@@ -46,18 +46,9 @@ public class AvaliacaoService {
         avaliacaoRepository.delete(avaliacao);
     }
 
-    public AvaliacaoDto buscarPorProduto(Integer cdProduto) {
-        AvaliacaoModel avaliacao = avaliacaoRepository.findAll().stream()
-                .filter(e -> e.getCdProduto().getCdProduto().equals(cdProduto))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Avaliação não encontrada para este produto"));
-        return converterParaDto(avaliacao);
-    }
-
-    // NOVO MÉTODO: Lista TODAS as avaliações de um produto
+    // CORRIGIDO: Agora usa o método do repository
     public List<AvaliacaoDto> listarPorProduto(Integer cdProduto) {
-        return avaliacaoRepository.findAll().stream()
-                .filter(e -> e.getCdProduto().getCdProduto().equals(cdProduto))
+        return avaliacaoRepository.findByCdProdutoCdProduto(cdProduto).stream()
                 .map(this::converterParaDto)
                 .collect(Collectors.toList());
     }

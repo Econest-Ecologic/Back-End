@@ -3,7 +3,7 @@ package com.ecommerce.equipe.controller;
 import com.ecommerce.equipe.dto.AvaliacaoDto;
 import com.ecommerce.equipe.service.AvaliacaoService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +13,10 @@ import java.util.List;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/v1/avaliacao")
+@RequiredArgsConstructor // Padronizado com Lombok
 public class AvaliacaoController {
 
-    @Autowired
-    private AvaliacaoService avaliacaoService;
+    private final AvaliacaoService avaliacaoService;
 
     @PostMapping
     public ResponseEntity<AvaliacaoDto> salvar(@RequestBody @Valid AvaliacaoDto avaliacaoDto) {

@@ -28,13 +28,15 @@ public class JwtUtil {
     // Novo método que recebe username + roles
     public String generateToken(String username, List<String> roles) {
         return Jwts.builder()
-                .setSubject(username)
-                .claim("authorities", roles)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                .setSubject(username) // Define o nome de usuário como o assunto do token
+                .claim("roles", roles) // Adiciona as roles como claim personalizada
+                .setIssuedAt(new Date()) // Data de emissão
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hora validade
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256)
                 .compact();
     }
+
+
 
     // Extrai as claims do token JWT (informações adicionais do token)
     public Claims extractClaims(String token) {
@@ -58,5 +60,11 @@ public class JwtUtil {
     public boolean validateToken(String token, String username) {
         final String extractedUsername = extractUsername(token);
         return (extractedUsername.equals(username) && !isTokenExpired(token));
+    }
+
+    // Extrai as roles do token JWT
+    public List<String> extractRoles(String token) {
+        Claims claims = extractClaims(token); // Pega as claims do token
+        return claims.get("roles", List.class); // Extrai a claim "roles" como lista
     }
 }

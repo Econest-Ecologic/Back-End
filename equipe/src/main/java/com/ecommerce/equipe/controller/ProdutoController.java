@@ -1,30 +1,28 @@
 package com.ecommerce.equipe.controller;
 
 import com.ecommerce.equipe.dto.ProdutoDto;
-import com.ecommerce.equipe.model.ProdutoModel;
 import com.ecommerce.equipe.service.ProdutoService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import java.util.Optional;
 
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("api/v1/produto")
+@RequiredArgsConstructor // Padronizado com Lombok
 public class ProdutoController {
 
-    @Autowired
-    private ProdutoService produtoService;
+    private final ProdutoService produtoService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProdutoDto> salvar(@ModelAttribute @Valid ProdutoDto produtoDto) {
-         ProdutoDto produto = produtoService.criarProduto(produtoDto);
-         return ResponseEntity.status(HttpStatus.CREATED).body(produto);
+        ProdutoDto produto = produtoService.criarProduto(produtoDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(produto);
     }
 
     @GetMapping
@@ -54,12 +52,11 @@ public class ProdutoController {
 
     @DeleteMapping("/{cdProduto}")
     public ResponseEntity<String> inativar(@PathVariable Integer cdProduto) {
-        try{
+        try {
             produtoService.inativarProduto(cdProduto);
             return ResponseEntity.ok("Produto Inativado com sucesso");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-
 }

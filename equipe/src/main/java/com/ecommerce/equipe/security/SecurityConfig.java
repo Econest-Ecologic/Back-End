@@ -30,18 +30,15 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
     }
 
-    // Configuração do filtro de segurança
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Cria uma instância do JwtRequestFilter com JwtUtil e UserDetailsService
         JwtRequestFilter jwtRequestFilter = new JwtRequestFilter(jwtUtil, userDetailsService);
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        // Rotas públicas de autenticação
-                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/register").permitAll()
+                        // Rotas públicas de autenticação (MELHORADO: Agrupadas)
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
 
                         // Rotas de produtos (público pode ver, só admin cadastra)
                         .requestMatchers(HttpMethod.GET, "/api/v1/produto/**").permitAll()
@@ -52,8 +49,9 @@ public class SecurityConfig {
                         // Rotas de pedido (usuário autenticado)
                         .requestMatchers("/api/v1/pedido/**").authenticated()
 
-                        // Rotas de avaliação (usuário autenticado)
-                        .requestMatchers("/api/v1/avaliacao/**").authenticated()
+                        // Rotas de avaliação (usuário autenticado pode avaliar)
+                        .requestMatchers(HttpMethod.GET, "/api/v1/avaliacao/**").permitAll() // Ver avaliações é público
+                        .requestMatchers("/api/v1/avaliacao/**").authenticated() // Criar/deletar precisa autenticação
 
                         // Rotas de usuário (admin)
                         .requestMatchers("/api/v1/usuario/**").hasAuthority("ADMIN")
@@ -62,6 +60,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/estoque/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/estoque/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/estoque/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/estoque/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/estoque/**").hasAuthority("ADMIN")
 
                         // Rotas de pagamento (usuário autenticado)
@@ -85,19 +84,13 @@ public class SecurityConfig {
         return http.build();
     }
 
-
-    // Configura o PasswordEncoder para criptografar senhas usando BCrypt
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Retorna uma instância de BCryptPasswordEncoder
+        return new BCryptPasswordEncoder();
     }
 
-    // Configura o AuthenticationManager usando AuthenticationConfiguration
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-
-        // Obtém e retorna o AuthenticationManager da configuração de autenticação
         return authenticationConfiguration.getAuthenticationManager();
     }
-
 }

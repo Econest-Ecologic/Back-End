@@ -4,6 +4,10 @@ import com.ecommerce.equipe.model.EstoqueModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
-public interface EstoqueRepository extends JpaRepository <EstoqueModel, Integer>{
+public interface EstoqueRepository extends JpaRepository<EstoqueModel, Integer> {
+    // Buscar estoque por ID do produto
+    Optional<EstoqueModel> findByCdProdutoCdProduto(Integer cdProduto);
 }

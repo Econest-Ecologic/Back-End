@@ -4,7 +4,7 @@ import com.ecommerce.equipe.dto.PedidoDto;
 import com.ecommerce.equipe.model.PedidoModel;
 import com.ecommerce.equipe.service.PedidoService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,14 +15,16 @@ import java.util.Optional;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/v1/pedido")
+@RequiredArgsConstructor // Padronizado com Lombok
 public class PedidoController {
 
-    @Autowired
-    private PedidoService pedidoService;
+    private final PedidoService pedidoService;
 
-    @PostMapping
-    public ResponseEntity<PedidoModel> salvar(@RequestBody @Valid PedidoDto pedidoDto) {
-        PedidoModel pedido = pedidoService.salvar(pedidoDto);
+    @PostMapping("/usuario/{cdUsuario}") // CORRIGIDO: Agora recebe o usuário
+    public ResponseEntity<PedidoModel> salvar(
+            @PathVariable Integer cdUsuario,
+            @RequestBody @Valid PedidoDto pedidoDto) {
+        PedidoModel pedido = pedidoService.salvar(cdUsuario, pedidoDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(pedido);
     }
 
@@ -40,7 +42,6 @@ public class PedidoController {
         return ResponseEntity.status(HttpStatus.OK).body(pedido.get());
     }
 
-    // NOVO: Buscar pedidos por usuário (HISTÓRICO)
     @GetMapping("/usuario/{cdUsuario}")
     public ResponseEntity<List<PedidoModel>> listarPorUsuario(@PathVariable Integer cdUsuario) {
         List<PedidoModel> pedidos = pedidoService.listarPorUsuario(cdUsuario);
