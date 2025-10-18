@@ -52,7 +52,7 @@ public class ProdutoController {
         }
     }
 
-    @DeleteMapping("/{cdProduto")
+    @DeleteMapping("/{cdProduto}")
     public ResponseEntity<String> inativar(@PathVariable Integer cdProduto) {
         try{
             produtoService.inativarProduto(cdProduto);
@@ -61,7 +61,5 @@ public class ProdutoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-
-
 
 }

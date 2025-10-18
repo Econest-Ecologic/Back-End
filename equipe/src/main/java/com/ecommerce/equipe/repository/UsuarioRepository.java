@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface UsuarioRepository extends JpaRepository <UsuarioModel, Integer>{
-    List<UsuarioModel> findByAtivoTrue();
+    List<UsuarioModel> findByFlAtivoTrue();
 
 }
 

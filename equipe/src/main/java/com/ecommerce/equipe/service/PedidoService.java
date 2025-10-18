@@ -1,16 +1,12 @@
 package com.ecommerce.equipe.service;
 
-import com.ecommerce.equipe.dto.ItemPedidoDto;
+
 import com.ecommerce.equipe.dto.PedidoDto;
 import com.ecommerce.equipe.model.ItemPedidoModel;
 import com.ecommerce.equipe.model.PedidoModel;
-import com.ecommerce.equipe.model.ProdutoModel;
 import com.ecommerce.equipe.model.StatusPedido;
-import com.ecommerce.equipe.repository.ItemPedidoRepository;
 import com.ecommerce.equipe.repository.PedidoRepository;
-import com.ecommerce.equipe.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.cache.spi.support.AbstractReadWriteAccess;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -74,13 +70,21 @@ public class PedidoService {
         );
     }
 
-    public void calcularValorTotal() {
+
+    public void calcularValorTotal(Integer cdPedido) {
+        PedidoModel pedido = pedidoRepository.findById(cdPedido)
+                .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
+
         double subtotal = 0.0;
-        for (ItemPedidoModel item : itens) {
-            subtotal += item.calcularSubtotal();
+
+        // Somar todos os itens do pedido
+        for (ItemPedidoModel item : pedido.getItens()) {
+            subtotal += item.getQtdItem() * item.getPrecoUnitario();
         }
-        this.vlFrete = estado.getValorFrete();
-        this.vlTotal = subtotal + vlFrete;
+
+        // Calcular total com frete
+        pedido.setVlTotal(subtotal + pedido.getVlFrete());
+        pedidoRepository.save(pedido);
     }
 
 }
