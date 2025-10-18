@@ -33,6 +33,9 @@ public class PedidoModel {
     @Column(name = "VLFRETE")
     private Double vlFrete;
 
+    @Column(name = "FLATIVO")
+    private Boolean flAtivo = true;
+
     @ManyToOne
     @JoinColumn(name = "CDUSUARIO")
     private UsuarioModel usuario;
