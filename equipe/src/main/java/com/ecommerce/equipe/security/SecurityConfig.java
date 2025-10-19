@@ -46,6 +46,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/v1/produto/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/produto/**").hasAuthority("ADMIN")
 
+                        .requestMatchers("/api/v1/item-pedido/**").permitAll()
+
                         // Rotas de pedido (usuário autenticado)
                         .requestMatchers("/api/v1/pedido/**").authenticated()
 

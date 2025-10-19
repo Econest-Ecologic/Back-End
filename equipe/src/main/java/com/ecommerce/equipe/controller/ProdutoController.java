@@ -50,6 +50,19 @@ public class ProdutoController {
         }
     }
 
+    @GetMapping("/buscar")
+    public ResponseEntity<List<ProdutoDto>> buscarPorNome(@RequestParam String nome) {
+        List<ProdutoDto> produtos = produtoService.buscarPorNome(nome);
+        return ResponseEntity.ok(produtos);
+    }
+
+    @GetMapping("/categoria/{categoria}")
+    public ResponseEntity<List<ProdutoDto>> buscarPorCategoria(@PathVariable String categoria) {
+        List<ProdutoDto> produtos = produtoService.buscarPorCategoria(categoria);
+        return ResponseEntity.ok(produtos);
+    }
+
+
     @DeleteMapping("/{cdProduto}")
     public ResponseEntity<String> inativar(@PathVariable Integer cdProduto) {
         try {

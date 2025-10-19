@@ -35,6 +35,22 @@ public class ProdutoService {
         return converterParaDto(produto);
     }
 
+    public List<ProdutoDto> buscarPorNome(String nome) {
+        return produtoRepository.buscarPorNome(nome)
+                .stream()
+                .map(this::converterParaDto)
+                .toList();
+    }
+
+    public List<ProdutoDto> buscarPorCategoria(String categoria) {
+        return produtoRepository.buscarPorCategoria(categoria)
+                .stream()
+                .map(this::converterParaDto)
+                .toList();
+    }
+
+
+
     public ProdutoDto atualizarProduto(Integer id, ProdutoDto dto) {
         ProdutoModel produto = produtoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado com o ID: " + id));
