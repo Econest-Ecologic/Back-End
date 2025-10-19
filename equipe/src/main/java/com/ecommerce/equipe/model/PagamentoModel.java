@@ -26,7 +26,7 @@ public class PagamentoModel {
     @Column(name = "NUVALOR")
     private Double nuValor;
 
-
     @Column(name = "DTPAGAMENTO")
     private Date dtPagamento;
 }
+
