@@ -19,13 +19,12 @@ public class PedidoService {
     private final PedidoRepository pedidoRepository;
     private final UsuarioRepository usuarioRepository;
 
-    // CORRIGIDO: Agora recebe o ID do usuário
     public PedidoModel salvar(Integer cdUsuario, PedidoDto pedidoDto) {
         UsuarioModel usuario = usuarioRepository.findById(cdUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
         PedidoModel model = converterParaModel(pedidoDto);
-        model.setUsuario(usuario); // Vincula o usuário ao pedido
+        model.setUsuario(usuario);
         return pedidoRepository.save(model);
     }
 
@@ -69,29 +68,5 @@ public class PedidoService {
         model.setVlTotal(pedidoDto.vlTotal());
         model.setVlFrete(pedidoDto.vlFrete());
         return model;
-    }
-
-    private PedidoDto converterParaDto(PedidoModel pedidoModel) {
-        return new PedidoDto(
-                pedidoModel.getCdPedido(),
-                pedidoModel.getDtPedido(),
-                pedidoModel.getStatus(),
-                pedidoModel.getVlTotal(),
-                pedidoModel.getVlFrete()
-        );
-    }
-
-    public void calcularValorTotal(Integer cdPedido) {
-        PedidoModel pedido = pedidoRepository.findById(cdPedido)
-                .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
-
-        double subtotal = 0.0;
-
-        for (ItemPedidoModel item : pedido.getItens()) {
-            subtotal += item.getQtdItem() * item.getPrecoUnitario();
-        }
-
-        pedido.setVlTotal(subtotal + pedido.getVlFrete());
-        pedidoRepository.save(pedido);
     }
 }

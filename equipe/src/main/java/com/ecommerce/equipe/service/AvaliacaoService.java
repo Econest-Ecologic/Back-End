@@ -46,7 +46,6 @@ public class AvaliacaoService {
         avaliacaoRepository.delete(avaliacao);
     }
 
-    // CORRIGIDO: Agora usa o método do repository
     public List<AvaliacaoDto> listarPorProduto(Integer cdProduto) {
         return avaliacaoRepository.findByCdProdutoCdProduto(cdProduto).stream()
                 .map(this::converterParaDto)

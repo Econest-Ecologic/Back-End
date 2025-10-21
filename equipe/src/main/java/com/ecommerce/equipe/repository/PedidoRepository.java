@@ -10,13 +10,6 @@ import java.util.List;
 
 @Repository
 public interface PedidoRepository extends JpaRepository<PedidoModel, Integer> {
-
     @Query("SELECT p FROM PedidoModel p WHERE p.flAtivo = true")
-    List<PedidoModel> findAllAtivos();
-
-    // NOVO: Buscar pedidos por usuário
-    List<PedidoModel> findByUsuario(UsuarioModel usuario);
-
-    // OU pode usar direto pelo ID do usuário:
     List<PedidoModel> findByUsuarioCdUsuario(Integer cdUsuario);
 }

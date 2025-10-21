@@ -8,6 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface EstoqueRepository extends JpaRepository<EstoqueModel, Integer> {
-    // Buscar estoque por ID do produto
     Optional<EstoqueModel> findByCdProdutoCdProduto(Integer cdProduto);
 }

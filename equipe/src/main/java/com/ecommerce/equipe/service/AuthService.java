@@ -31,26 +31,21 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     public LoginResponseDto login(LoginRequestDto dto) {
-        // Autentica o usuário com Spring Security
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.nmEmail(), dto.nmSenha())
         );
 
-        // Busca o usuário no banco
         UsuarioModel usuario = usuarioRepository.findByNmEmail(dto.nmEmail())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        // Verifica se o usuário está ativo
         if (!usuario.getFlAtivo()) {
             throw new RuntimeException("Usuário inativo");
         }
 
-        // Extrai os nomes das roles
         List<String> roles = usuario.getRoles().stream()
                 .map(RoleModel::getNmRole)
                 .collect(Collectors.toList());
 
-        // Gera o token JWT
         String token = jwtUtil.generateToken(usuario.getNmEmail(), roles);
 
         return new LoginResponseDto(
@@ -64,24 +59,21 @@ public class AuthService {
     }
 
     public LoginResponseDto register(RegisterRequestDto dto) {
-        // Verifica se o email já existe
         Optional<UsuarioModel> usuarioExiste = usuarioRepository.findByNmEmail(dto.nmEmail());
         if (usuarioExiste.isPresent()) {
             throw new RuntimeException("Email já cadastrado");
         }
 
-        // Cria o novo usuário
         UsuarioModel novoUsuario = new UsuarioModel();
         novoUsuario.setNmUsuario(dto.nmUsuario());
         novoUsuario.setNmEmail(dto.nmEmail());
-        novoUsuario.setNmSenha(passwordEncoder.encode(dto.nmSenha())); // Criptografa a senha
+        novoUsuario.setNmSenha(passwordEncoder.encode(dto.nmSenha()));
         novoUsuario.setNuCpf(dto.nuCpf());
         novoUsuario.setDsEndereco(dto.dsEndereco());
         novoUsuario.setNuTelefone(dto.nuTelefone());
         novoUsuario.setEstado(dto.estado());
         novoUsuario.setFlAtivo(true);
 
-        // Define a role USER por padrão
         RoleModel roleUser = roleRepository.findByNmRole("USER")
                 .orElseThrow(() -> new RuntimeException("Role USER não encontrada"));
 
@@ -89,15 +81,12 @@ public class AuthService {
         roles.add(roleUser);
         novoUsuario.setRoles(roles);
 
-        // Salva o usuário
         UsuarioModel salvo = usuarioRepository.save(novoUsuario);
 
-        // Extrai os nomes das roles
         List<String> rolesNomes = salvo.getRoles().stream()
                 .map(RoleModel::getNmRole)
                 .collect(Collectors.toList());
 
-        // Gera o token JWT
         String token = jwtUtil.generateToken(salvo.getNmEmail(), rolesNomes);
 
         return new LoginResponseDto(

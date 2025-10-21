@@ -32,7 +32,7 @@ public class ProdutoModel {
     private String categoria;
 
     @Lob
-    @Column(name = "IMGPRODUTO", nullable = true) //
+    @Column(name = "IMGPRODUTO", nullable = true)
     private byte[] imgProduto;
 
     @Column(name = "FLATIVO")

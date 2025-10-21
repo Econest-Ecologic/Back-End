@@ -15,12 +15,12 @@ import java.util.Optional;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/v1/pedido")
-@RequiredArgsConstructor // Padronizado com Lombok
+@RequiredArgsConstructor
 public class PedidoController {
 
     private final PedidoService pedidoService;
 
-    @PostMapping("/usuario/{cdUsuario}") // CORRIGIDO: Agora recebe o usuário
+    @PostMapping("/usuario/{cdUsuario}")
     public ResponseEntity<PedidoModel> salvar(
             @PathVariable Integer cdUsuario,
             @RequestBody @Valid PedidoDto pedidoDto) {

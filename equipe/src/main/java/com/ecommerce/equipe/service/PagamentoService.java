@@ -21,25 +21,20 @@ public class PagamentoService {
     private final PedidoRepository pedidoRepository;
 
     public PagamentoDto salvar(Integer cdPedido, PagamentoDto dto) {
-        // Busca o pedido
         PedidoModel pedido = pedidoRepository.findById(cdPedido)
                 .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
 
-        // Verifica se o pedido já foi pago
         if (pedido.getStatus() == StatusPedido.PAGO) {
             throw new RuntimeException("Este pedido já foi pago");
         }
 
-        // Verifica se o pedido está cancelado
         if (pedido.getStatus() == StatusPedido.CANCELADO) {
             throw new RuntimeException("Não é possível pagar um pedido cancelado");
         }
 
-        // Cria o pagamento
         PagamentoModel model = converterParaModel(dto);
         PagamentoModel salvo = pagamentoRepository.save(model);
 
-        // Atualiza o status do pedido para PAGO
         pedido.setStatus(StatusPedido.PAGO);
         pedidoRepository.save(pedido);
 

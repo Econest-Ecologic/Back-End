@@ -10,7 +10,5 @@ import java.util.List;
 
 @Repository
 public interface ItemPedidoRepository extends JpaRepository <ItemPedidoModel, Integer>{
-
-    List<ItemPedidoModel> findByPedido(PedidoModel pedido);
     List<ItemPedidoModel> findByPedidoCdPedido(Integer cdPedido);
 }

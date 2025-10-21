@@ -76,7 +76,7 @@ public class UsuarioService {
 
         model.setNmUsuario(dto.nmUsuario());
         model.setNmEmail(dto.nmEmail());
-        model.setNmSenha(passwordEncoder.encode(dto.nmSenha())); // CORRIGIDO: Criptografa a senha
+        model.setNmSenha(passwordEncoder.encode(dto.nmSenha()));
         model.setNuCpf(dto.nuCpf());
         model.setDsEndereco(dto.dsEndereco());
         model.setNuTelefone(dto.nuTelefone());

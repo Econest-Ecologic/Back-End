@@ -10,7 +10,6 @@ import com.ecommerce.equipe.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +28,6 @@ public class ItemPedidoService {
 
         ItemPedidoModel salvo = itemPedidoRepository.save(model);
 
-        // Recalcula o total do pedido
         calcularValorTotal(cdPedido);
 
         return salvo;
@@ -53,7 +51,6 @@ public class ItemPedidoService {
 
         ItemPedidoModel atualizado = itemPedidoRepository.save(item);
 
-        // Recalcula o total do pedido
         calcularValorTotal(item.getPedido().getCdPedido());
 
         return atualizado;
@@ -66,7 +63,6 @@ public class ItemPedidoService {
         Integer cdPedido = item.getPedido().getCdPedido();
         itemPedidoRepository.delete(item);
 
-        // Recalcula o total do pedido
         calcularValorTotal(cdPedido);
     }
 

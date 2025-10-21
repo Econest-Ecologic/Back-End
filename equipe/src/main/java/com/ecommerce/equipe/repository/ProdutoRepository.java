@@ -11,13 +11,9 @@ import java.util.List;
 @Repository
 public interface ProdutoRepository extends JpaRepository<ProdutoModel, Integer> {
 
-    @Query("SELECT p FROM ProdutoModel p WHERE p.flAtivo = true")
-    List<ProdutoModel> findAllAtivos();
-
     @Query("SELECT p FROM ProdutoModel p WHERE LOWER(p.nmProduto) LIKE LOWER(CONCAT('%', :nome, '%')) AND p.flAtivo = true")
     List<ProdutoModel> buscarPorNome(@Param("nome") String nome);
 
-    // NOVO: Busca por categoria
     @Query("SELECT p FROM ProdutoModel p WHERE LOWER(p.categoria) = LOWER(:categoria) AND p.flAtivo = true")
     List<ProdutoModel> buscarPorCategoria(@Param("categoria") String categoria);
 }

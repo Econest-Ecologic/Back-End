@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class JwtRequestFilter extends OncePerRequestFilter {
-
-    // Define propriedades para armazenar instâncias de JwtUtil e UserDetailsService
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
 
@@ -26,7 +24,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
     }
 
-    //metodo chamado uma vez por requisicao para processar o filtro
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
@@ -41,10 +38,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
                 if (jwtUtil.validateToken(token, username)) {
-                    // Extrai as roles do token
                     List<String> roles = jwtUtil.extractRoles(token);
 
-                    // Converte para GrantedAuthority
                     List<SimpleGrantedAuthority> authorities = roles.stream()
                             .map(SimpleGrantedAuthority::new)
                             .collect(Collectors.toList());

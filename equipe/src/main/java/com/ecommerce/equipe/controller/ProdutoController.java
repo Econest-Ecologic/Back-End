@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("api/v1/produto")
-@RequiredArgsConstructor // Padronizado com Lombok
+@RequiredArgsConstructor
 public class ProdutoController {
 
     private final ProdutoService produtoService;

@@ -24,11 +24,9 @@ public class AdminInitializer {
             String emailAdmin = "admin@admin.com";
             String senhaAdmin = "admin123";
 
-            // SIMPLIFICADO: Método auxiliar para buscar ou criar roles
             RoleModel roleAdmin = buscarOuCriarRole(roleRepository, "ADMIN");
             RoleModel roleUser = buscarOuCriarRole(roleRepository, "USER");
 
-            // Verifica se o usuário admin já existe
             Optional<UsuarioModel> adminExiste = usuarioRepository.findByNmEmail(emailAdmin);
 
             if (adminExiste.isEmpty()) {
@@ -57,7 +55,6 @@ public class AdminInitializer {
         };
     }
 
-    // NOVO: Método auxiliar para evitar repetição de código
     private RoleModel buscarOuCriarRole(RoleRepository roleRepository, String nomeRole) {
         return roleRepository.findByNmRole(nomeRole)
                 .orElseGet(() -> {

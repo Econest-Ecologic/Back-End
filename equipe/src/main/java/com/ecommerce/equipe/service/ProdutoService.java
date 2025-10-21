@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor // Padronizado com Lombok
+@RequiredArgsConstructor
 public class ProdutoService {
 
     private final ProdutoRepository produtoRepository;
@@ -105,7 +105,7 @@ public class ProdutoService {
 
     private ProdutoDto converterParaDto(ProdutoModel model) {
         return new ProdutoDto(
-                model.getCdProduto(), // CORRIGIDO: Agora retorna o ID
+                model.getCdProduto(),
                 model.getNmProduto(),
                 model.getDsProduto(),
                 model.getPreco(),

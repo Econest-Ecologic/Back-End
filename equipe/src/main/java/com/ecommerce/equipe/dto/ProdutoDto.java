@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public record ProdutoDto(
 
-        Integer cdProduto, // ADICIONADO para facilitar identificação no front-end
+        Integer cdProduto,
 
         @NotBlank(message = "Não é possível salvar um produto sem nome")
         @Size(min = 3, max = 50, message = "O nome do produto deve ter entre 3 e 50 caracteres.")

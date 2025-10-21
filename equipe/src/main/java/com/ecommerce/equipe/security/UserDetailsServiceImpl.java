@@ -21,8 +21,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         UsuarioModel usuario0 = usuarioRepository.findByNmEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + email));
 
-
-        // Cria e retorna um objeto UserDetails com base no usuário encontrado
         return User.builder()
                 .username(usuario0.getNmEmail())
                 .password(usuario0.getNmSenha())

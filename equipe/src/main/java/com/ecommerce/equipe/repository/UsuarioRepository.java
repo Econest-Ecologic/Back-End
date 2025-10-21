@@ -9,9 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface UsuarioRepository extends JpaRepository <UsuarioModel, Integer>{
-
-    List<UsuarioModel> findByFlAtivoTrue();
-
     Optional<UsuarioModel> findByNmEmail(String emailUsuario);
 
 }

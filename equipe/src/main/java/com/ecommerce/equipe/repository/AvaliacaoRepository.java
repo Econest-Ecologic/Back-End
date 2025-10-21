@@ -8,6 +8,5 @@ import java.util.List;
 
 @Repository
 public interface AvaliacaoRepository extends JpaRepository<AvaliacaoModel, Integer> {
-    // Buscar todas as avaliações de um produto
     List<AvaliacaoModel> findByCdProdutoCdProduto(Integer cdProduto);
 }

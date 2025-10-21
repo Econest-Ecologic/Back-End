@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/v1/avaliacao")
-@RequiredArgsConstructor // Padronizado com Lombok
+@RequiredArgsConstructor
 public class AvaliacaoController {
 
     private final AvaliacaoService avaliacaoService;
