@@ -1,7 +1,9 @@
 package com.ecommerce.equipe.service;
 
 import com.ecommerce.equipe.dto.ProdutoDto;
+import com.ecommerce.equipe.model.EstoqueModel;
 import com.ecommerce.equipe.model.ProdutoModel;
+import com.ecommerce.equipe.repository.EstoqueRepository;
 import com.ecommerce.equipe.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,10 +17,17 @@ import java.util.List;
 public class ProdutoService {
 
     private final ProdutoRepository produtoRepository;
+    private final EstoqueRepository estoqueRepository;
 
     public ProdutoDto criarProduto(ProdutoDto dto) {
         ProdutoModel model = converterParaModel(dto);
         ProdutoModel salvo = produtoRepository.save(model);
+
+        EstoqueModel estoque = new EstoqueModel();
+        estoque.setCdProduto(salvo);
+        estoque.setQtdEstoque(dto.qtdEstoque());
+        estoqueRepository.save(estoque);
+
         return converterParaDto(salvo);
     }
 
@@ -49,8 +58,6 @@ public class ProdutoService {
                 .toList();
     }
 
-
-
     public ProdutoDto atualizarProduto(Integer id, ProdutoDto dto) {
         ProdutoModel produto = produtoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado com o ID: " + id));
@@ -71,6 +78,14 @@ public class ProdutoService {
         }
 
         ProdutoModel atualizado = produtoRepository.save(produto);
+
+        if (dto.qtdEstoque() != null) {
+            EstoqueModel estoque = estoqueRepository.findByCdProdutoCdProduto(id)
+                    .orElseThrow(() -> new RuntimeException("Estoque não encontrado para este produto"));
+            estoque.setQtdEstoque(dto.qtdEstoque());
+            estoqueRepository.save(estoque);
+        }
+
         return converterParaDto(atualizado);
     }
 
@@ -104,6 +119,10 @@ public class ProdutoService {
     }
 
     private ProdutoDto converterParaDto(ProdutoModel model) {
+        Integer qtdEstoque = estoqueRepository.findByCdProdutoCdProduto(model.getCdProduto())
+                .map(EstoqueModel::getQtdEstoque)
+                .orElse(0);
+
         return new ProdutoDto(
                 model.getCdProduto(),
                 model.getNmProduto(),
@@ -111,7 +130,8 @@ public class ProdutoService {
                 model.getPreco(),
                 model.getCategoria(),
                 null,
-                model.getFlAtivo()
+                model.getFlAtivo(),
+                qtdEstoque
         );
     }
 }

@@ -1,9 +1,11 @@
 package com.ecommerce.equipe.service;
 
 import com.ecommerce.equipe.dto.ItemPedidoDto;
+import com.ecommerce.equipe.model.EstoqueModel;
 import com.ecommerce.equipe.model.ItemPedidoModel;
 import com.ecommerce.equipe.model.PedidoModel;
 import com.ecommerce.equipe.model.ProdutoModel;
+import com.ecommerce.equipe.repository.EstoqueRepository;
 import com.ecommerce.equipe.repository.ItemPedidoRepository;
 import com.ecommerce.equipe.repository.PedidoRepository;
 import com.ecommerce.equipe.repository.ProdutoRepository;
@@ -18,10 +20,32 @@ public class ItemPedidoService {
     private final ItemPedidoRepository itemPedidoRepository;
     private final PedidoRepository pedidoRepository;
     private final ProdutoRepository produtoRepository;
+    private final EstoqueRepository estoqueRepository;
 
     public ItemPedidoModel salvar(Integer cdPedido, ItemPedidoDto itemPedidoDto) {
         PedidoModel pedido = pedidoRepository.findById(cdPedido)
                 .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
+
+        ProdutoModel produto = produtoRepository.findById(itemPedidoDto.cdProduto())
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
+        if (!produto.getFlAtivo()) {
+            throw new RuntimeException("Produto inativo não pode ser adicionado ao pedido");
+        }
+
+        EstoqueModel estoque = estoqueRepository.findByCdProdutoCdProduto(itemPedidoDto.cdProduto())
+                .orElseThrow(() -> new RuntimeException("Estoque não encontrado para este produto"));
+
+        if (estoque.getQtdEstoque() <= 0) {
+            throw new RuntimeException("Produto sem estoque disponível");
+        }
+
+        if (estoque.getQtdEstoque() < itemPedidoDto.qtdItem()) {
+            throw new RuntimeException("Quantidade solicitada maior que o estoque disponível");
+        }
+
+        estoque.setQtdEstoque(estoque.getQtdEstoque() - itemPedidoDto.qtdItem());
+        estoqueRepository.save(estoque);
 
         ItemPedidoModel model = converterParaModel(itemPedidoDto);
         model.setPedido(pedido);
@@ -46,6 +70,26 @@ public class ItemPedidoService {
         ItemPedidoModel item = itemPedidoRepository.findById(cdItemPedido)
                 .orElseThrow(() -> new RuntimeException("Item não encontrado"));
 
+        Integer qtdAnterior = item.getQtdItem();
+        Integer qtdNova = itemPedidoDto.qtdItem();
+        Integer cdProduto = item.getCdProduto().getCdProduto();
+
+        EstoqueModel estoque = estoqueRepository.findByCdProdutoCdProduto(cdProduto)
+                .orElseThrow(() -> new RuntimeException("Estoque não encontrado para este produto"));
+
+        Integer diferenca = qtdNova - qtdAnterior;
+
+        if (diferenca > 0) {
+            if (estoque.getQtdEstoque() < diferenca) {
+                throw new RuntimeException("Estoque insuficiente");
+            }
+            estoque.setQtdEstoque(estoque.getQtdEstoque() - diferenca);
+        } else if (diferenca < 0) {
+            estoque.setQtdEstoque(estoque.getQtdEstoque() + Math.abs(diferenca));
+        }
+
+        estoqueRepository.save(estoque);
+
         item.setQtdItem(itemPedidoDto.qtdItem());
         item.setPrecoUnitario(itemPedidoDto.precoUnitario());
 
@@ -59,6 +103,13 @@ public class ItemPedidoService {
     public void remover(Integer cdItemPedido) {
         ItemPedidoModel item = itemPedidoRepository.findById(cdItemPedido)
                 .orElseThrow(() -> new RuntimeException("Item não encontrado"));
+
+        Integer cdProduto = item.getCdProduto().getCdProduto();
+        EstoqueModel estoque = estoqueRepository.findByCdProdutoCdProduto(cdProduto)
+                .orElseThrow(() -> new RuntimeException("Estoque não encontrado para este produto"));
+
+        estoque.setQtdEstoque(estoque.getQtdEstoque() + item.getQtdItem());
+        estoqueRepository.save(estoque);
 
         Integer cdPedido = item.getPedido().getCdPedido();
         itemPedidoRepository.delete(item);

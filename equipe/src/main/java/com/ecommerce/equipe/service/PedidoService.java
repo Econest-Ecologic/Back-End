@@ -1,10 +1,13 @@
 package com.ecommerce.equipe.service;
 
 import com.ecommerce.equipe.dto.PedidoDto;
+import com.ecommerce.equipe.model.EstoqueModel;
 import com.ecommerce.equipe.model.ItemPedidoModel;
 import com.ecommerce.equipe.model.PedidoModel;
 import com.ecommerce.equipe.model.StatusPedido;
 import com.ecommerce.equipe.model.UsuarioModel;
+import com.ecommerce.equipe.repository.EstoqueRepository;
+import com.ecommerce.equipe.repository.ItemPedidoRepository;
 import com.ecommerce.equipe.repository.PedidoRepository;
 import com.ecommerce.equipe.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,8 @@ import java.util.Optional;
 public class PedidoService {
     private final PedidoRepository pedidoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final ItemPedidoRepository itemPedidoRepository;
+    private final EstoqueRepository estoqueRepository;
 
     public PedidoModel salvar(Integer cdUsuario, PedidoDto pedidoDto) {
         UsuarioModel usuario = usuarioRepository.findById(cdUsuario)
@@ -57,6 +62,17 @@ public class PedidoService {
         if (pedido.getStatus() == StatusPedido.ENVIADO || pedido.getStatus() == StatusPedido.ENTREGUE) {
             throw new IllegalStateException("Não é possível cancelar um pedido já enviado ou entregue.");
         }
+
+        List<ItemPedidoModel> itens = itemPedidoRepository.findByPedidoCdPedido(cdPedido);
+        for (ItemPedidoModel item : itens) {
+            Integer cdProduto = item.getCdProduto().getCdProduto();
+            EstoqueModel estoque = estoqueRepository.findByCdProdutoCdProduto(cdProduto)
+                    .orElseThrow(() -> new RuntimeException("Estoque não encontrado para o produto"));
+
+            estoque.setQtdEstoque(estoque.getQtdEstoque() + item.getQtdItem());
+            estoqueRepository.save(estoque);
+        }
+
         pedido.setStatus(StatusPedido.CANCELADO);
         pedidoRepository.save(pedido);
     }

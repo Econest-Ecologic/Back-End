@@ -4,6 +4,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Min;
 import org.springframework.web.multipart.MultipartFile;
 
 public record ProdutoDto(
@@ -28,5 +29,9 @@ public record ProdutoDto(
 
         MultipartFile imgProduto,
 
-        Boolean flAtivo
+        Boolean flAtivo,
+
+        @NotNull(message = "A quantidade em estoque é obrigatória")
+        @Min(value = 0, message = "A quantidade em estoque não pode ser negativa")
+        Integer qtdEstoque
 ) {}
