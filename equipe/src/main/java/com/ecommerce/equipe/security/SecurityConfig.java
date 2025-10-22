@@ -37,30 +37,39 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
+                        // Rotas públicas de autenticação
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
 
+                        // Rotas de produtos
                         .requestMatchers(HttpMethod.GET, "/api/v1/produto/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/produto/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/produto/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/produto/**").hasAuthority("ADMIN")
 
-                        .requestMatchers("/api/v1/item-pedido/**").permitAll()
+                        // Rotas de item-pedido (CORRIGIDO - exige autenticação)
+                        .requestMatchers("/api/v1/item-pedido/**").authenticated()
 
+                        // Rotas de pedido
                         .requestMatchers("/api/v1/pedido/**").authenticated()
 
+                        // Rotas de avaliação
                         .requestMatchers(HttpMethod.GET, "/api/v1/avaliacao/**").permitAll()
                         .requestMatchers("/api/v1/avaliacao/**").authenticated()
 
+                        // Rotas de usuário (apenas admin)
                         .requestMatchers("/api/v1/usuario/**").hasAuthority("ADMIN")
 
+                        // Rotas de estoque
                         .requestMatchers(HttpMethod.GET, "/api/v1/estoque/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/estoque/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/estoque/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/estoque/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/estoque/**").hasAuthority("ADMIN")
 
+                        // Rotas de pagamento
                         .requestMatchers("/api/v1/pagamento/**").authenticated()
 
+                        // Qualquer outra rota
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -70,7 +79,7 @@ public class SecurityConfig {
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             response.setContentType("application/json");
-                            response.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"Token required\"}");
+                            response.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"Token inválido ou ausente\"}");
                         })
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

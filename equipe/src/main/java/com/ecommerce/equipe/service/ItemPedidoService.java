@@ -132,6 +132,8 @@ public class ItemPedidoService {
         pedidoRepository.save(pedido);
     }
 
+    // REMOVIDO: converterParaDto duplicado que não era usado
+
     private ItemPedidoModel converterParaModel(ItemPedidoDto dto) {
         ItemPedidoModel model = new ItemPedidoModel();
 
@@ -143,13 +145,5 @@ public class ItemPedidoService {
         model.setCdProduto(produto);
 
         return model;
-    }
-
-    private ItemPedidoDto converterParaDto(ItemPedidoModel model) {
-        return new ItemPedidoDto(
-                model.getQtdItem(),
-                model.getPrecoUnitario(),
-                model.getCdProduto().getCdProduto()
-        );
     }
 }
