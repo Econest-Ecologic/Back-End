@@ -29,7 +29,7 @@ public class JwtUtil {
                 .setSubject(username)
                 .claim("roles", roles)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hora validade
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 4)) // 1 hora validade
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256)
                 .compact();
     }
