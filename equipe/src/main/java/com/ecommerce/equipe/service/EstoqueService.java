@@ -77,7 +77,7 @@ public class EstoqueService {
     public boolean verificarDisponibilidade(Integer cdProduto, Integer quantidade) {
         try {
             EstoqueDto estoque = buscarPorProduto(cdProduto);
-            return estoque.qtdEstoque() >= quantidade;
+            return estoque.qtdEstoque() >= quantidade && estoque.qtdEstoque() > 0;
         } catch (RuntimeException e) {
             return false;
         }

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Table(name = "TBITEMPEDIDO")
 public class ItemPedidoModel {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
