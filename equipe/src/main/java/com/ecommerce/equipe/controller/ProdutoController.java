@@ -1,6 +1,8 @@
 package com.ecommerce.equipe.controller;
 
 import com.ecommerce.equipe.dto.ProdutoDto;
+import com.ecommerce.equipe.model.ProdutoModel;
+import com.ecommerce.equipe.repository.ProdutoRepository;
 import com.ecommerce.equipe.service.ProdutoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import java.util.List;
 public class ProdutoController {
 
     private final ProdutoService produtoService;
+    private final ProdutoRepository produtoRepository;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProdutoDto> salvar(@ModelAttribute @Valid ProdutoDto produtoDto) {
@@ -70,6 +73,26 @@ public class ProdutoController {
             return ResponseEntity.ok("Produto Inativado com sucesso");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{cdProduto}/imagem")
+    public ResponseEntity<byte[]> buscarImagem(@PathVariable Integer cdProduto) {
+        try {
+            ProdutoModel produto = produtoRepository.findById(cdProduto)
+                    .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
+            byte[] imagem = produto.getImgProduto();
+
+            if (imagem == null || imagem.length == 0) {
+                return ResponseEntity.notFound().build();
+            }
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(imagem);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 }
