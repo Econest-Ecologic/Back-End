@@ -8,9 +8,6 @@ import com.ecommerce.equipe.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -60,14 +57,7 @@ public class UsuarioService {
 
         usuario.setRoles(obterRoles(dto));
         usuario.setEstado(dto.estado());
-        MultipartFile imagem = dto.imgUsuario();
-        if (imagem != null && !imagem.isEmpty()) {
-            try {
-                usuario.setImgUsuario(imagem.getBytes());
-            } catch (IOException e) {
-                throw new RuntimeException("Erro ao atualizar imagem do produto.", e);
-            }
-        }
+
 
         UsuarioModel atualizado = usuarioRepository.save(usuario);
         return converterParaDto(atualizado);
@@ -93,14 +83,6 @@ public class UsuarioService {
         model.setFlAtivo(dto.flAtivo() != null ? dto.flAtivo() : true);
         model.setEstado(dto.estado());
         model.setRoles(obterRoles(dto));
-        MultipartFile imagem = dto.imgUsuario();
-        if (imagem != null && !imagem.isEmpty()) {
-            try {
-                model.setImgUsuario(imagem.getBytes());
-            } catch (IOException e) {
-                throw new RuntimeException("Erro ao processar imagem do produto.", e);
-            }
-        }
         return model;
     }
 
@@ -117,8 +99,7 @@ public class UsuarioService {
                 model.getNuTelefone(),
                 roles,
                 model.getFlAtivo(),
-                model.getEstado(),
-                null
+                model.getEstado()
         );
     }
 

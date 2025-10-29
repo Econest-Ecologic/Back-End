@@ -47,10 +47,6 @@ public class UsuarioModel {
     @Column(name = "FLATIVO")
     private Boolean flAtivo = true;
 
-    @Lob
-    @Column(name = "IMGUSUARIO", nullable = true)
-    private byte[] imgUsuario;
-
     @Column(name = "ESTADO")
     private Estado estado;
 }

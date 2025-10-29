@@ -39,7 +39,6 @@ public class AdminInitializer {
                 admin.setNuTelefone("00000000000");
                 admin.setFlAtivo(true);
                 admin.setEstado(null);
-                admin.setImgUsuario(null);
 
                 Set<RoleModel> roles = new HashSet<>();
                 roles.add(roleAdmin);

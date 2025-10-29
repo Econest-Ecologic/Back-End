@@ -44,8 +44,6 @@ public record UsuarioDto (
         Boolean flAtivo,
 
         @NotNull(message = "Estado é obrigatório")
-        Estado estado,
-
-        MultipartFile imgUsuario
+        Estado estado
 ){
 }

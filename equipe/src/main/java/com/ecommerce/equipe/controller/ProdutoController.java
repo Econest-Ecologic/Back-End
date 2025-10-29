@@ -75,24 +75,4 @@ public class ProdutoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-
-    @GetMapping("/{cdProduto}/imagem")
-    public ResponseEntity<byte[]> buscarImagem(@PathVariable Integer cdProduto) {
-        try {
-            ProdutoModel produto = produtoRepository.findById(cdProduto)
-                    .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
-
-            byte[] imagem = produto.getImgProduto();
-
-            if (imagem == null || imagem.length == 0) {
-                return ResponseEntity.notFound().build();
-            }
-
-            return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_JPEG)
-                    .body(imagem);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
 }
