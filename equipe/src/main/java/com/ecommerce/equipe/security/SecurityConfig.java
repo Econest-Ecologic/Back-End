@@ -44,7 +44,6 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        // Rotas públicas de autenticação
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
 
                         // Rotas de produtos
@@ -53,7 +52,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/v1/produto/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/produto/**").hasAuthority("ADMIN")
 
-                        // Rotas de item-pedido (CORRIGIDO - exige autenticação)
                         .requestMatchers("/api/v1/item-pedido/**").authenticated()
 
                         // Rotas de pedido
@@ -64,9 +62,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/avaliacao/**").authenticated()
 
                         // Rotas de usuário (apenas admin)
-                        .requestMatchers("/api/v1/usuario/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/usuario/**").hasAnyRole("ADMIN", "USER")
 
-                        // Rotas de estoque
                         .requestMatchers(HttpMethod.GET, "/api/v1/estoque/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/estoque/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/estoque/**").hasAuthority("ADMIN")

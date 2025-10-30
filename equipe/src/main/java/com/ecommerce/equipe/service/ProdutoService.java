@@ -124,7 +124,6 @@ public class ProdutoService {
                 .map(EstoqueModel::getQtdEstoque)
                 .orElse(0);
 
-        // Converter imagem para Base64 se existir
         String imagemBase64 = null;
         if (model.getImgProduto() != null && model.getImgProduto().length > 0) {
             imagemBase64 = Base64.getEncoder().encodeToString(model.getImgProduto());
