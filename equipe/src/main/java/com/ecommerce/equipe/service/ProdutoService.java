@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -123,6 +124,12 @@ public class ProdutoService {
                 .map(EstoqueModel::getQtdEstoque)
                 .orElse(0);
 
+        // Converter imagem para Base64 se existir
+        String imagemBase64 = null;
+        if (model.getImgProduto() != null && model.getImgProduto().length > 0) {
+            imagemBase64 = Base64.getEncoder().encodeToString(model.getImgProduto());
+        }
+
         return new ProdutoDto(
                 model.getCdProduto(),
                 model.getNmProduto(),
@@ -130,6 +137,7 @@ public class ProdutoService {
                 model.getPreco(),
                 model.getCategoria(),
                 null,
+                imagemBase64,
                 model.getFlAtivo(),
                 qtdEstoque
         );

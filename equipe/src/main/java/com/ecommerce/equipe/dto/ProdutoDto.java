@@ -29,6 +29,8 @@ public record ProdutoDto(
 
         MultipartFile imgProduto,
 
+        String imgProdutoBase64,
+
         Boolean flAtivo,
 
         @NotNull(message = "A quantidade em estoque é obrigatória")

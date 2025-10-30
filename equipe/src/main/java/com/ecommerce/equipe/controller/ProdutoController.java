@@ -1,8 +1,6 @@
 package com.ecommerce.equipe.controller;
 
 import com.ecommerce.equipe.dto.ProdutoDto;
-import com.ecommerce.equipe.model.ProdutoModel;
-import com.ecommerce.equipe.repository.ProdutoRepository;
 import com.ecommerce.equipe.service.ProdutoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +18,6 @@ import java.util.List;
 public class ProdutoController {
 
     private final ProdutoService produtoService;
-    private final ProdutoRepository produtoRepository;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProdutoDto> salvar(@ModelAttribute @Valid ProdutoDto produtoDto) {
@@ -64,7 +61,6 @@ public class ProdutoController {
         List<ProdutoDto> produtos = produtoService.buscarPorCategoria(categoria);
         return ResponseEntity.ok(produtos);
     }
-
 
     @DeleteMapping("/{cdProduto}")
     public ResponseEntity<String> inativar(@PathVariable Integer cdProduto) {
