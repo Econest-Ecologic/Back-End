@@ -1,12 +1,17 @@
 package com.ecommerce.equipe.controller;
 
 import com.ecommerce.equipe.dto.UsuarioDto;
+import com.ecommerce.equipe.model.UsuarioModel;
+import com.ecommerce.equipe.repository.UsuarioRepository;
 import com.ecommerce.equipe.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -16,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UsuarioController {
     private final UsuarioService usuarioService;
+    private final UsuarioRepository usuarioRepository;
 
     @PostMapping
     public ResponseEntity<UsuarioDto> salvar(@RequestBody @Valid UsuarioDto usuarioDto) {
@@ -30,21 +36,54 @@ public class UsuarioController {
     }
 
     @GetMapping("/{cdUsuario}")
-    public ResponseEntity<Object> buscar(@PathVariable Integer cdUsuario) {
-        try{
+    public ResponseEntity<Object> buscar(
+            @PathVariable Integer cdUsuario,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            // Buscar o usuário logado
+            UsuarioModel usuarioLogado = usuarioRepository.findByNmEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+            // Verificar se é ADMIN
+            boolean isAdmin = usuarioLogado.getRoles().stream()
+                    .anyMatch(role -> role.getNmRole().equals("ADMIN"));
+
+            // Se não for ADMIN, só pode ver o próprio perfil
+            if (!isAdmin && !usuarioLogado.getCdUsuario().equals(cdUsuario)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("Você só pode ver seu próprio perfil!");
+            }
+
             UsuarioDto usuario = usuarioService.buscarPorId(cdUsuario);
             return ResponseEntity.ok(usuario);
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
     @PutMapping("/{cdUsuario}")
-    public ResponseEntity<Object> atualizar(@PathVariable Integer cdUsuario, @RequestBody @Valid UsuarioDto usuarioDto) {
-        try{
+    public ResponseEntity<Object> atualizar(
+            @PathVariable Integer cdUsuario,
+            @RequestBody @Valid UsuarioDto usuarioDto,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            // Buscar o usuário logado
+            UsuarioModel usuarioLogado = usuarioRepository.findByNmEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+            // Verificar se é ADMIN
+            boolean isAdmin = usuarioLogado.getRoles().stream()
+                    .anyMatch(role -> role.getNmRole().equals("ADMIN"));
+
+            // Se não for ADMIN, só pode editar o próprio perfil
+            if (!isAdmin && !usuarioLogado.getCdUsuario().equals(cdUsuario)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("Você só pode editar seu próprio perfil!");
+            }
+
             UsuarioDto usuario = usuarioService.atualizar(cdUsuario, usuarioDto);
             return ResponseEntity.ok(usuario);
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
