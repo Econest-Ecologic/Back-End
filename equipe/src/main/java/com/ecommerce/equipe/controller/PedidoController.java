@@ -3,110 +3,147 @@ package com.ecommerce.equipe.controller;
 import com.ecommerce.equipe.dto.PedidoDto;
 import com.ecommerce.equipe.model.PedidoModel;
 import com.ecommerce.equipe.model.UsuarioModel;
-import com.ecommerce.equipe.repository.PedidoRepository;
 import com.ecommerce.equipe.repository.UsuarioRepository;
 import com.ecommerce.equipe.service.PedidoService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/v1/pedido")
-@RequiredArgsConstructor
 public class PedidoController {
 
     private final PedidoService pedidoService;
     private final UsuarioRepository usuarioRepository;
 
-    @PostMapping("/usuario/{cdUsuario}")
-    public ResponseEntity<PedidoModel> salvar(
-            @PathVariable Integer cdUsuario,
-            @RequestBody @Valid PedidoDto pedidoDto) {
-        PedidoModel pedido = pedidoService.salvar(cdUsuario, pedidoDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(pedido);
+    public PedidoController(PedidoService pedidoService, UsuarioRepository usuarioRepository) {
+        this.pedidoService = pedidoService;
+        this.usuarioRepository = usuarioRepository;
     }
 
-    @GetMapping
-    public ResponseEntity<List<PedidoModel>> listar(@AuthenticationPrincipal UserDetails userDetails) {
-        // Buscar o usuário logado
-        UsuarioModel usuarioLogado = usuarioRepository.findByNmEmail(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-        // Verificar se é ADMIN
-        boolean isAdmin = usuarioLogado.getRoles().stream()
-                .anyMatch(role -> role.getNmRole().equals("ADMIN"));
-
-        if (isAdmin) {
-            // ADMIN vê TODOS os pedidos
-            return ResponseEntity.ok(pedidoService.listar());
-        } else {
-            // USER vê apenas SEUS pedidos
-            List<PedidoModel> pedidos = pedidoService.listarPorUsuario(usuarioLogado.getCdUsuario());
-            return ResponseEntity.ok(pedidos);
+    // cadastrar pedido
+    @PostMapping("/usuario/{cdUsuario}")
+    public ResponseEntity<?> salvar(@PathVariable Integer cdUsuario,
+                                    @RequestBody @Valid PedidoDto pedidoDto) {
+        try {
+            PedidoModel pedido = pedidoService.salvar(cdUsuario, pedidoDto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(pedido);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
-    @GetMapping("/{cdPedido}")
-    public ResponseEntity<Object> buscarPedido(
-            @PathVariable("cdPedido") Integer cdPedido,
-            @AuthenticationPrincipal UserDetails userDetails) {
+    // listar pedidos administrador ve todos, usurio so o dele
+    @GetMapping
+    public ResponseEntity<?> listar(@AuthenticationPrincipal UserDetails userDetails) {
         try {
-            // Buscar o usuário logado
             UsuarioModel usuarioLogado = usuarioRepository.findByNmEmail(userDetails.getUsername())
                     .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-            // Buscar o pedido
+            boolean isAdmin = usuarioLogado.getRoles().stream()
+                    .anyMatch(role -> role.getNmRole().equals("ADMIN"));
+
+            if (isAdmin) {
+                return ResponseEntity.ok(pedidoService.listar());
+            } else {
+                List<PedidoModel> pedidos = pedidoService.listarPorUsuario(usuarioLogado.getCdUsuario());
+                return ResponseEntity.ok(pedidos);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não autenticado");
+        }
+    }
+
+    // buscar pedido por id (só o dono ou admin)
+    @GetMapping("/{cdPedido}")
+    public ResponseEntity<?> buscarPedido(@PathVariable Integer cdPedido, @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            UsuarioModel usuarioLogado = usuarioRepository.findByNmEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
             Optional<PedidoModel> pedido = pedidoService.buscarPorId(cdPedido);
+
             if (pedido.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pedido não encontrado");
             }
 
-            // Verificar se é ADMIN
             boolean isAdmin = usuarioLogado.getRoles().stream()
                     .anyMatch(role -> role.getNmRole().equals("ADMIN"));
 
-            // Se não for ADMIN, só pode ver SEUS pedidos
             if (!isAdmin && !pedido.get().getUsuario().getCdUsuario().equals(usuarioLogado.getCdUsuario())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body("Você só pode ver seus próprios pedidos!");
             }
 
-            return ResponseEntity.status(HttpStatus.OK).body(pedido.get());
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.ok(pedido.get());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
-    @GetMapping("/usuario/{cdUsuario}")
-    public ResponseEntity<List<PedidoModel>> listarPorUsuario(@PathVariable Integer cdUsuario) {
-        List<PedidoModel> pedidos = pedidoService.listarPorUsuario(cdUsuario);
-        return ResponseEntity.ok(pedidos);
-    }
-
+    // atualizar pedido, admin ou dono
     @PutMapping("/{cdPedido}")
-    public ResponseEntity<Object> atualizar(@PathVariable Integer cdPedido, @RequestBody @Valid PedidoDto pedidoDto) {
+    public ResponseEntity<?> atualizar(@PathVariable Integer cdPedido, @RequestBody @Valid PedidoDto pedidoDto,
+                                       @AuthenticationPrincipal UserDetails userDetails) {
         try {
+            UsuarioModel usuarioLogado = usuarioRepository.findByNmEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+            Optional<PedidoModel> pedido = pedidoService.buscarPorId(cdPedido);
+            if (pedido.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pedido não encontrado");
+            }
+
+            boolean isAdmin = usuarioLogado.getRoles().stream()
+                    .anyMatch(role -> role.getNmRole().equals("ADMIN"));
+
+            if (!isAdmin && !pedido.get().getUsuario().getCdUsuario().equals(usuarioLogado.getCdUsuario())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("Você não pode atualizar o pedido de outro usuário!");
+            }
+
             PedidoModel atualizado = pedidoService.atualizar(cdPedido, pedidoDto);
             return ResponseEntity.ok(atualizado);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
+    // deletar  pedido so o administrador
     @DeleteMapping("/{cdPedido}")
-    public ResponseEntity<String> cancelar(@PathVariable Integer cdPedido) {
+    public ResponseEntity<?> cancelar(@PathVariable Integer cdPedido,
+                                      @AuthenticationPrincipal UserDetails userDetails) {
         try {
+
+            UsuarioModel usuarioLogado = usuarioRepository.findByNmEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+
+            boolean isAdmin = usuarioLogado.getRoles().stream()
+                    .anyMatch(role -> role.getNmRole().equals("ADMIN"));
+
+            if (!isAdmin) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("Apenas administradores podem deletar pedidos!");
+            }
+
+
+            Optional<PedidoModel> pedido = pedidoService.buscarPorId(cdPedido);
+            if (pedido.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pedido não encontrado");
+            }
+
+            // admin tem permissao pra deletar o pedido
             pedidoService.cancelarPedido(cdPedido);
-            return ResponseEntity.ok("Pedido cancelado com sucesso");
-        } catch (RuntimeException e) {
+            return ResponseEntity.ok("Pedido deletado com sucesso pelo administrador!");
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }

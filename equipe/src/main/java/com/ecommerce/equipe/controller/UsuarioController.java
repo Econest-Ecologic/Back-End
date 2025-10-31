@@ -11,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
-
 import java.util.List;
 
 @RestController
@@ -40,15 +38,15 @@ public class UsuarioController {
             @PathVariable Integer cdUsuario,
             @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            // Buscar o usuário logado
+
             UsuarioModel usuarioLogado = usuarioRepository.findByNmEmail(userDetails.getUsername())
                     .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-            // Verificar se é ADMIN
+
             boolean isAdmin = usuarioLogado.getRoles().stream()
                     .anyMatch(role -> role.getNmRole().equals("ADMIN"));
 
-            // Se não for ADMIN, só pode ver o próprio perfil
+            // ser nao e admin ve somente o proprio perfil
             if (!isAdmin && !usuarioLogado.getCdUsuario().equals(cdUsuario)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body("Você só pode ver seu próprio perfil!");
@@ -67,15 +65,15 @@ public class UsuarioController {
             @RequestBody @Valid UsuarioDto usuarioDto,
             @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            // Buscar o usuário logado
+            // busca o usuário logado
             UsuarioModel usuarioLogado = usuarioRepository.findByNmEmail(userDetails.getUsername())
                     .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-            // Verificar se é ADMIN
+            // verificar se é administrador
             boolean isAdmin = usuarioLogado.getRoles().stream()
                     .anyMatch(role -> role.getNmRole().equals("ADMIN"));
 
-            // Se não for ADMIN, só pode editar o próprio perfil
+            // se nao e admin, so pode edita o próprio perfil
             if (!isAdmin && !usuarioLogado.getCdUsuario().equals(cdUsuario)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body("Você só pode editar seu próprio perfil!");

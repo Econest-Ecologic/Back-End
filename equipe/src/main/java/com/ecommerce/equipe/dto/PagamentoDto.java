@@ -4,7 +4,6 @@ import com.ecommerce.equipe.model.MetodoPagamento;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PastOrPresent;
-
 import java.util.Date;
 
 public record PagamentoDto(

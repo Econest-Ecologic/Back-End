@@ -1,7 +1,6 @@
 package com.ecommerce.equipe.dto;
 
 import com.ecommerce.equipe.model.Estado;
-
 import java.util.List;
 
 public record LoginResponseDto(

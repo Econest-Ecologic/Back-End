@@ -7,7 +7,6 @@ import com.ecommerce.equipe.repository.EstoqueRepository;
 import com.ecommerce.equipe.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
 

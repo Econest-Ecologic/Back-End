@@ -1,6 +1,5 @@
 package com.ecommerce.equipe.dto;
 
-import com.ecommerce.equipe.model.Estado;
 import com.ecommerce.equipe.model.StatusPedido;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;

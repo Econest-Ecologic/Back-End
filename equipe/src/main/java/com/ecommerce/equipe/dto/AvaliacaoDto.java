@@ -1,7 +1,6 @@
 package com.ecommerce.equipe.dto;
 
 import jakarta.validation.constraints.*;
-
 import java.sql.Timestamp;
 
 public record AvaliacaoDto(

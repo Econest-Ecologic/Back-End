@@ -9,7 +9,6 @@ import com.ecommerce.equipe.repository.ProdutoRepository;
 import com.ecommerce.equipe.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
