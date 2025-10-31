@@ -74,6 +74,8 @@ public class SecurityConfig {
                         // Deletar usuário - APENAS ADMIN
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/usuario/**").hasAuthority("ADMIN")
 
+
+
                         // ========== PEDIDOS ==========
                         // Usuário pode criar, ver e atualizar APENAS SEUS pedidos
                         .requestMatchers("/api/v1/pedido/**").authenticated()
@@ -88,14 +90,20 @@ public class SecurityConfig {
                         // Usuário autenticado pode criar/deletar avaliação
                         .requestMatchers("/api/v1/avaliacao/**").authenticated()
 
-                        // ========== ESTOQUE ==========
-                        // Qualquer um pode VER estoque (para saber se tem produto disponível)
-                        .requestMatchers(HttpMethod.GET, "/api/v1/estoque/**").permitAll()
-                        // Apenas ADMIN pode gerenciar estoque
-                        .requestMatchers(HttpMethod.POST, "/api/v1/estoque/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/estoque/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/api/v1/estoque/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/estoque/**").hasAuthority("ADMIN")
+
+// ========== ESTOQUE ==========
+// Qualquer um pode VER estoque (para saber se tem produto disponível)
+                                .requestMatchers(HttpMethod.GET, "/api/v1/estoque/**").permitAll()
+
+// ✅ NOVO: Usuários autenticados podem RESERVAR e LIBERAR estoque
+                                .requestMatchers(HttpMethod.POST, "/api/v1/estoque/reservar").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/api/v1/estoque/liberar").authenticated()
+
+// Apenas ADMIN pode gerenciar estoque diretamente
+                                .requestMatchers(HttpMethod.POST, "/api/v1/estoque").hasAuthority("ADMIN")
+                                .requestMatchers(HttpMethod.PUT, "/api/v1/estoque/**").hasAuthority("ADMIN")
+                                .requestMatchers(HttpMethod.PATCH, "/api/v1/estoque/**").hasAuthority("ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/api/v1/estoque/**").hasAuthority("ADMIN")
 
                         // ========== PAGAMENTO ==========
                         // Usuário pode pagar APENAS SEUS pedidos

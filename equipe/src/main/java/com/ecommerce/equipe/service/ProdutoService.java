@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,31 +32,41 @@ public class ProdutoService {
         return converterParaDto(salvo);
     }
 
+    // ✅ CORRIGIDO: Agora só retorna produtos ATIVOS
     public List<ProdutoDto> listarProdutos() {
         return produtoRepository.findAll()
                 .stream()
+                .filter(produto -> produto.getFlAtivo() != null && produto.getFlAtivo()) // ✅ Filtra apenas ativos
                 .map(this::converterParaDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public ProdutoDto buscarPorId(Integer id) {
         ProdutoModel produto = produtoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado com o ID: " + id));
+
+        // ✅ SEGURANÇA: Verifica se está ativo antes de retornar
+        if (produto.getFlAtivo() == null || !produto.getFlAtivo()) {
+            throw new RuntimeException("Produto não está disponível");
+        }
+
         return converterParaDto(produto);
     }
 
     public List<ProdutoDto> buscarPorNome(String nome) {
         return produtoRepository.buscarPorNome(nome)
                 .stream()
+                .filter(produto -> produto.getFlAtivo() != null && produto.getFlAtivo()) // ✅ Filtra ativos
                 .map(this::converterParaDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public List<ProdutoDto> buscarPorCategoria(String categoria) {
         return produtoRepository.buscarPorCategoria(categoria)
                 .stream()
+                .filter(produto -> produto.getFlAtivo() != null && produto.getFlAtivo()) // ✅ Filtra ativos
                 .map(this::converterParaDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public ProdutoDto atualizarProduto(Integer id, ProdutoDto dto) {
@@ -79,6 +90,7 @@ public class ProdutoService {
 
         ProdutoModel atualizado = produtoRepository.save(produto);
 
+        // ✅ ATUALIZAR ESTOQUE quando produto for atualizado
         if (dto.qtdEstoque() != null) {
             EstoqueModel estoque = estoqueRepository.findByCdProdutoCdProduto(id)
                     .orElseThrow(() -> new RuntimeException("Estoque não encontrado para este produto"));
@@ -89,12 +101,15 @@ public class ProdutoService {
         return converterParaDto(atualizado);
     }
 
+    // ✅ INATIVAR PRODUTO (soft delete)
     public void inativarProduto(Integer cd) {
         ProdutoModel produto = produtoRepository.findById(cd)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado com o ID: " + cd));
 
+        System.out.println("🗑️ Inativando produto: " + produto.getNmProduto());
         produto.setFlAtivo(false);
         produtoRepository.save(produto);
+        System.out.println("✅ Produto inativado com sucesso!");
     }
 
     private ProdutoModel converterParaModel(ProdutoDto dto) {
@@ -126,16 +141,20 @@ public class ProdutoService {
         String imagemBase64 = null;
         if (model.getImgProduto() != null && model.getImgProduto().length > 0) {
             imagemBase64 = Base64.getEncoder().encodeToString(model.getImgProduto());
+            System.out.println("✅ Imagem convertida para Base64 (tamanho: " + imagemBase64.length() + ")");
+        } else {
+            System.out.println("⚠️ Produto sem imagem: " + model.getNmProduto());
         }
 
+        // ✅ IMPORTANTE: O campo imgProdutoBase64 deve ser usado no frontend
         return new ProdutoDto(
                 model.getCdProduto(),
                 model.getNmProduto(),
                 model.getDsProduto(),
                 model.getPreco(),
                 model.getCategoria(),
-                null,
-                imagemBase64,
+                null, // imgProduto (arquivo) não é enviado na resposta
+                imagemBase64, // ✅ imgProdutoBase64 - String Base64 da imagem
                 model.getFlAtivo(),
                 qtdEstoque
         );
