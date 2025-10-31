@@ -62,7 +62,7 @@ public class EstoqueService {
         estoque.setQtdEstoque(estoque.getQtdEstoque() + quantidade);
         EstoqueModel atualizado = estoqueRepository.save(estoque);
 
-        System.out.println("✅ Novo estoque: " + atualizado.getQtdEstoque());
+        System.out.println("Novo estoque: " + atualizado.getQtdEstoque());
 
         return converterParaDto(atualizado);
     }
@@ -72,7 +72,7 @@ public class EstoqueService {
         EstoqueModel estoque = estoqueRepository.findById(cdEstoque)
                 .orElseThrow(() -> new RuntimeException("Estoque não encontrado"));
 
-        System.out.println("➖ Removendo " + quantidade + " do estoque atual: " + estoque.getQtdEstoque());
+        System.out.println("Removendo " + quantidade + " do estoque atual: " + estoque.getQtdEstoque());
 
         if (estoque.getQtdEstoque() < quantidade) {
             throw new RuntimeException("Quantidade insuficiente em estoque. Disponível: " + estoque.getQtdEstoque());
@@ -81,12 +81,11 @@ public class EstoqueService {
         estoque.setQtdEstoque(estoque.getQtdEstoque() - quantidade);
         EstoqueModel atualizado = estoqueRepository.save(estoque);
 
-        System.out.println("✅ Novo estoque: " + atualizado.getQtdEstoque());
+        System.out.println("Novo estoque: " + atualizado.getQtdEstoque());
 
         return converterParaDto(atualizado);
     }
 
-    // ✅ NOVO: Métodos que trabalham diretamente com cdProduto
     @Transactional
     public EstoqueDto adicionarQuantidade(Integer cdProduto, Integer quantidade, boolean isProdutoId) {
         EstoqueModel estoque = estoqueRepository.findByCdProdutoCdProduto(cdProduto)
@@ -97,7 +96,7 @@ public class EstoqueService {
         estoque.setQtdEstoque(estoque.getQtdEstoque() + quantidade);
         EstoqueModel atualizado = estoqueRepository.save(estoque);
 
-        System.out.println("✅ [POR PRODUTO] Novo estoque: " + atualizado.getQtdEstoque());
+        System.out.println("[POR PRODUTO] Novo estoque: " + atualizado.getQtdEstoque());
 
         return converterParaDto(atualizado);
     }
@@ -107,7 +106,7 @@ public class EstoqueService {
         EstoqueModel estoque = estoqueRepository.findByCdProdutoCdProduto(cdProduto)
                 .orElseThrow(() -> new RuntimeException("Estoque não encontrado para este produto"));
 
-        System.out.println("➖ [POR PRODUTO] Removendo " + quantidade + " do estoque atual: " + estoque.getQtdEstoque());
+        System.out.println("[POR PRODUTO] Removendo " + quantidade + " do estoque atual: " + estoque.getQtdEstoque());
 
         if (estoque.getQtdEstoque() < quantidade) {
             throw new RuntimeException(
@@ -119,7 +118,7 @@ public class EstoqueService {
         estoque.setQtdEstoque(estoque.getQtdEstoque() - quantidade);
         EstoqueModel atualizado = estoqueRepository.save(estoque);
 
-        System.out.println("✅ [POR PRODUTO] Novo estoque: " + atualizado.getQtdEstoque());
+        System.out.println("[POR PRODUTO] Novo estoque: " + atualizado.getQtdEstoque());
 
         return converterParaDto(atualizado);
     }
@@ -132,11 +131,11 @@ public class EstoqueService {
             System.out.println("🔍 Verificando disponibilidade - Produto: " + cdProduto +
                     ", Solicitado: " + quantidade +
                     ", Disponível: " + estoque.qtdEstoque() +
-                    ", Resultado: " + (disponivel ? "✅ OK" : "❌ INSUFICIENTE"));
+                    ", Resultado: " + (disponivel ? "OK" : "INSUFICIENTE"));
 
             return disponivel;
         } catch (RuntimeException e) {
-            System.err.println("❌ Erro ao verificar disponibilidade: " + e.getMessage());
+            System.err.println("Erro ao verificar disponibilidade: " + e.getMessage());
             return false;
         }
     }

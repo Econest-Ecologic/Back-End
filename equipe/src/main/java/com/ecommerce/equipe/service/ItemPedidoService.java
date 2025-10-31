@@ -23,34 +23,32 @@ public class ItemPedidoService {
     private final ProdutoRepository produtoRepository;
     private final EstoqueRepository estoqueRepository;
 
-    /**
-     * ✅ CORRIGIDO: Adiciona item ao pedido e ATUALIZA ESTOQUE automaticamente
-     */
+
     @Transactional
     public ItemPedidoModel salvar(Integer cdPedido, ItemPedidoDto itemPedidoDto) {
-        System.out.println("📦 Adicionando item ao pedido...");
+        System.out.println("Adicionando item ao pedido...");
 
-        // 1. Buscar pedido
+
         PedidoModel pedido = pedidoRepository.findById(cdPedido)
                 .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
 
-        // 2. Buscar produto
+
         ProdutoModel produto = produtoRepository.findById(itemPedidoDto.cdProduto())
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
 
-        // 3. ✅ VALIDAR se produto está ativo
+
         if (produto.getFlAtivo() == null || !produto.getFlAtivo()) {
             throw new RuntimeException("Produto não está disponível para venda");
         }
 
-        // 4. ✅ BUSCAR ESTOQUE
+
         EstoqueModel estoque = estoqueRepository.findByCdProdutoCdProduto(itemPedidoDto.cdProduto())
                 .orElseThrow(() -> new RuntimeException("Estoque não encontrado para este produto"));
 
-        System.out.println("📊 Estoque atual: " + estoque.getQtdEstoque());
-        System.out.println("🛒 Quantidade solicitada: " + itemPedidoDto.qtdItem());
+        System.out.println("Estoque atual: " + estoque.getQtdEstoque());
+        System.out.println("Quantidade solicitada: " + itemPedidoDto.qtdItem());
 
-        // 5. ✅ VALIDAR ESTOQUE
+
         if (estoque.getQtdEstoque() <= 0) {
             throw new RuntimeException("Produto sem estoque disponível");
         }
@@ -62,12 +60,11 @@ public class ItemPedidoService {
             );
         }
 
-        // 6. ✅ DIMINUIR ESTOQUE
         int novoEstoque = estoque.getQtdEstoque() - itemPedidoDto.qtdItem();
         estoque.setQtdEstoque(novoEstoque);
         estoqueRepository.save(estoque);
 
-        System.out.println("✅ Estoque atualizado: " + novoEstoque);
+        System.out.println("Estoque atualizado: " + novoEstoque);
 
         // 7. Criar item do pedido
         ItemPedidoModel model = converterParaModel(itemPedidoDto);
@@ -79,7 +76,7 @@ public class ItemPedidoService {
         // 8. Recalcular valor total do pedido
         calcularValorTotal(cdPedido);
 
-        System.out.println("✅ Item adicionado ao pedido com sucesso!");
+        System.out.println("Item adicionado ao pedido com sucesso!");
         return salvo;
     }
 
@@ -92,12 +89,10 @@ public class ItemPedidoService {
                 .orElseThrow(() -> new RuntimeException("Item não encontrado"));
     }
 
-    /**
-     * ✅ CORRIGIDO: Atualiza quantidade e ajusta estoque
-     */
+
     @Transactional
     public ItemPedidoModel atualizar(Integer cdItemPedido, ItemPedidoDto itemPedidoDto) {
-        System.out.println("🔄 Atualizando item do pedido...");
+        System.out.println("Atualizando item do pedido...");
 
         ItemPedidoModel item = itemPedidoRepository.findById(cdItemPedido)
                 .orElseThrow(() -> new RuntimeException("Item não encontrado"));
@@ -106,14 +101,14 @@ public class ItemPedidoService {
         Integer qtdNova = itemPedidoDto.qtdItem();
         Integer cdProduto = item.getCdProduto().getCdProduto();
 
-        System.out.println("📊 Quantidade anterior: " + qtdAnterior);
-        System.out.println("📊 Quantidade nova: " + qtdNova);
+        System.out.println("Quantidade anterior: " + qtdAnterior);
+        System.out.println("Quantidade nova: " + qtdNova);
 
-        // ✅ BUSCAR ESTOQUE
+
         EstoqueModel estoque = estoqueRepository.findByCdProdutoCdProduto(cdProduto)
                 .orElseThrow(() -> new RuntimeException("Estoque não encontrado para este produto"));
 
-        // ✅ CALCULAR DIFERENÇA
+
         Integer diferenca = qtdNova - qtdAnterior;
         System.out.println("📊 Diferença: " + diferenca);
 
@@ -125,15 +120,15 @@ public class ItemPedidoService {
                 );
             }
             estoque.setQtdEstoque(estoque.getQtdEstoque() - diferenca);
-            System.out.println("⬇️ Diminuindo estoque em " + diferenca);
+            System.out.println("Diminuindo estoque em " + diferenca);
         } else if (diferenca < 0) {
             // Diminuiu quantidade - precisa aumentar estoque
             estoque.setQtdEstoque(estoque.getQtdEstoque() + Math.abs(diferenca));
-            System.out.println("⬆️ Aumentando estoque em " + Math.abs(diferenca));
+            System.out.println("Aumentando estoque em " + Math.abs(diferenca));
         }
 
         estoqueRepository.save(estoque);
-        System.out.println("✅ Novo estoque: " + estoque.getQtdEstoque());
+        System.out.println("Novo estoque: " + estoque.getQtdEstoque());
 
         // Atualizar item
         item.setQtdItem(itemPedidoDto.qtdItem());
@@ -147,12 +142,10 @@ public class ItemPedidoService {
         return atualizado;
     }
 
-    /**
-     * ✅ CORRIGIDO: Remove item e DEVOLVE ao estoque
-     */
+
     @Transactional
     public void remover(Integer cdItemPedido) {
-        System.out.println("🗑️ Removendo item do pedido...");
+        System.out.println("Removendo item do pedido...");
 
         ItemPedidoModel item = itemPedidoRepository.findById(cdItemPedido)
                 .orElseThrow(() -> new RuntimeException("Item não encontrado"));
@@ -160,15 +153,15 @@ public class ItemPedidoService {
         Integer cdProduto = item.getCdProduto().getCdProduto();
         Integer quantidade = item.getQtdItem();
 
-        // ✅ DEVOLVER AO ESTOQUE
+
         EstoqueModel estoque = estoqueRepository.findByCdProdutoCdProduto(cdProduto)
                 .orElseThrow(() -> new RuntimeException("Estoque não encontrado para este produto"));
 
-        System.out.println("⬆️ Devolvendo " + quantidade + " unidades ao estoque");
+        System.out.println("Devolvendo " + quantidade + " unidades ao estoque");
         estoque.setQtdEstoque(estoque.getQtdEstoque() + quantidade);
         estoqueRepository.save(estoque);
 
-        System.out.println("✅ Novo estoque: " + estoque.getQtdEstoque());
+        System.out.println("Novo estoque: " + estoque.getQtdEstoque());
 
         Integer cdPedido = item.getPedido().getCdPedido();
         itemPedidoRepository.delete(item);
@@ -176,9 +169,6 @@ public class ItemPedidoService {
         calcularValorTotal(cdPedido);
     }
 
-    /**
-     * Recalcula o valor total do pedido
-     */
     private void calcularValorTotal(Integer cdPedido) {
         PedidoModel pedido = pedidoRepository.findById(cdPedido)
                 .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
@@ -193,7 +183,7 @@ public class ItemPedidoService {
         pedido.setVlTotal(subtotal + pedido.getVlFrete());
         pedidoRepository.save(pedido);
 
-        System.out.println("💰 Valor total atualizado: R$ " + pedido.getVlTotal());
+        System.out.println("Valor total atualizado: R$ " + pedido.getVlTotal());
     }
 
     private ItemPedidoModel converterParaModel(ItemPedidoDto dto) {

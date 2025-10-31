@@ -44,72 +44,62 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        // ========== ROTAS PÚBLICAS ==========
-                        // Registro e Login (qualquer um pode criar conta e logar)
+
+                        // Registro e Login de usuario
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
 
-                        // ========== PRODUTOS (E-COMMERCE) ==========
-                        // Qualquer um pode VER produtos (para navegar na loja)
+                        // Qualquer um pode VER produtos para navegar na loja
                         .requestMatchers(HttpMethod.GET, "/api/v1/produto/**").permitAll()
                         // Apenas ADMIN pode cadastrar, editar e deletar produtos
                         .requestMatchers(HttpMethod.POST, "/api/v1/produto/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/produto/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/produto/**").hasAuthority("ADMIN")
 
-                        // ========== USUÁRIOS ==========
+
                         // Listar TODOS os usuários - apenas ADMIN
                         .requestMatchers(HttpMethod.GET, "/api/v1/usuario").hasAuthority("ADMIN")
 
-                        // Ver perfil específico - qualquer usuário autenticado
+
                         // (validação no controller: só pode ver o próprio ou ADMIN pode ver todos)
                         .requestMatchers(HttpMethod.GET, "/api/v1/usuario/**").authenticated()
 
-                        // Criar usuário via /usuario - apenas ADMIN (usuários normais usam /auth/register)
+                        // Criar usuário via /usuario somente ADMIN
                         .requestMatchers(HttpMethod.POST, "/api/v1/usuario").hasAuthority("ADMIN")
 
-                        // Atualizar perfil - qualquer usuário autenticado
-                        // (validação no controller: só pode editar o próprio ou ADMIN pode editar todos)
+
+                        // validação no controller: só pode editar o próprio ou ADMIN pode editar todos
                         .requestMatchers(HttpMethod.PUT, "/api/v1/usuario/**").authenticated()
 
                         // Deletar usuário - APENAS ADMIN
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/usuario/**").hasAuthority("ADMIN")
 
-
-
-                        // ========== PEDIDOS ==========
                         // Usuário pode criar, ver e atualizar APENAS SEUS pedidos
                         .requestMatchers("/api/v1/pedido/**").authenticated()
 
-                        // ========== ITENS DO PEDIDO ==========
                         // Usuário pode adicionar/remover itens dos SEUS pedidos
                         .requestMatchers("/api/v1/item-pedido/**").authenticated()
 
-                        // ========== AVALIAÇÕES ==========
                         // Qualquer um pode VER avaliações (para ver reviews dos produtos)
                         .requestMatchers(HttpMethod.GET, "/api/v1/avaliacao/**").permitAll()
                         // Usuário autenticado pode criar/deletar avaliação
                         .requestMatchers("/api/v1/avaliacao/**").authenticated()
 
-
-// ========== ESTOQUE ==========
-// Qualquer um pode VER estoque (para saber se tem produto disponível)
+                        // Qualquer um pode VER estoque (para saber se tem produto disponível)
                                 .requestMatchers(HttpMethod.GET, "/api/v1/estoque/**").permitAll()
 
-// ✅ NOVO: Usuários autenticados podem RESERVAR e LIBERAR estoque
+                        // Usuários autenticados podem RESERVAR e LIBERAR estoque
                                 .requestMatchers(HttpMethod.POST, "/api/v1/estoque/reservar").authenticated()
                                 .requestMatchers(HttpMethod.POST, "/api/v1/estoque/liberar").authenticated()
 
-// Apenas ADMIN pode gerenciar estoque diretamente
+                        // Apenas ADMIN pode gerenciar estoque diretamente
                                 .requestMatchers(HttpMethod.POST, "/api/v1/estoque").hasAuthority("ADMIN")
                                 .requestMatchers(HttpMethod.PUT, "/api/v1/estoque/**").hasAuthority("ADMIN")
                                 .requestMatchers(HttpMethod.PATCH, "/api/v1/estoque/**").hasAuthority("ADMIN")
                                 .requestMatchers(HttpMethod.DELETE, "/api/v1/estoque/**").hasAuthority("ADMIN")
 
-                        // ========== PAGAMENTO ==========
                         // Usuário pode pagar APENAS SEUS pedidos
                         .requestMatchers("/api/v1/pagamento/**").authenticated()
 
-                        // Qualquer outra rota requer autenticação
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

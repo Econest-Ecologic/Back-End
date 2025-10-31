@@ -59,42 +59,42 @@ public class EstoqueController {
         }
     }
 
-    // ✅ NOVO: Endpoint para reservar estoque (quando adiciona ao carrinho)
+
     @PostMapping("/reservar")
     public ResponseEntity<Object> reservarEstoque(@RequestBody Map<String, Integer> request) {
         try {
             Integer cdProduto = request.get("cdProduto");
             Integer quantidade = request.get("quantidade");
 
-            System.out.println("🔒 Reservando estoque - Produto: " + cdProduto + ", Quantidade: " + quantidade);
+            System.out.println("Reservando estoque - Produto: " + cdProduto + ", Quantidade: " + quantidade);
 
             EstoqueDto atualizado = estoqueService.removerQuantidade(cdProduto, quantidade);
 
-            System.out.println("✅ Estoque reservado com sucesso. Novo estoque: " + atualizado.qtdEstoque());
+            System.out.println("Estoque reservado com sucesso. Novo estoque: " + atualizado.qtdEstoque());
 
             return ResponseEntity.ok(atualizado);
         } catch (RuntimeException e) {
-            System.err.println("❌ Erro ao reservar estoque: " + e.getMessage());
+            System.err.println("Erro ao reservar estoque: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
-    // ✅ NOVO: Endpoint para liberar estoque (quando remove do carrinho)
+
     @PostMapping("/liberar")
     public ResponseEntity<Object> liberarEstoque(@RequestBody Map<String, Integer> request) {
         try {
             Integer cdProduto = request.get("cdProduto");
             Integer quantidade = request.get("quantidade");
 
-            System.out.println("🔓 Liberando estoque - Produto: " + cdProduto + ", Quantidade: " + quantidade);
+            System.out.println("Liberando estoque - Produto: " + cdProduto + ", Quantidade: " + quantidade);
 
             EstoqueDto atualizado = estoqueService.adicionarQuantidade(cdProduto, quantidade);
 
-            System.out.println("✅ Estoque liberado com sucesso. Novo estoque: " + atualizado.qtdEstoque());
+            System.out.println("Estoque liberado com sucesso. Novo estoque: " + atualizado.qtdEstoque());
 
             return ResponseEntity.ok(atualizado);
         } catch (RuntimeException e) {
-            System.err.println("❌ Erro ao liberar estoque: " + e.getMessage());
+            System.err.println("Erro ao liberar estoque: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
