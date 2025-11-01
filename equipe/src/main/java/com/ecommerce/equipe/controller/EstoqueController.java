@@ -39,13 +39,22 @@ public class EstoqueController {
         }
     }
 
+    // ✅ CORRIGIDO: Melhor tratamento de erro 404
     @GetMapping("/produto/{cdProduto}")
     public ResponseEntity<Object> buscarPorProduto(@PathVariable Integer cdProduto) {
         try {
             EstoqueDto estoque = estoqueService.buscarPorProduto(cdProduto);
             return ResponseEntity.ok(estoque);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            System.err.println("❌ Erro ao buscar estoque do produto " + cdProduto + ": " + e.getMessage());
+
+            // ✅ Retornar 404 com mensagem clara
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of(
+                            "error", "Estoque não encontrado",
+                            "message", "Não há estoque cadastrado para este produto",
+                            "cdProduto", cdProduto
+                    ));
         }
     }
 
@@ -59,42 +68,64 @@ public class EstoqueController {
         }
     }
 
-
+    // ✅ CORRIGIDO: Melhor validação antes de reservar
     @PostMapping("/reservar")
     public ResponseEntity<Object> reservarEstoque(@RequestBody Map<String, Integer> request) {
         try {
             Integer cdProduto = request.get("cdProduto");
             Integer quantidade = request.get("quantidade");
 
-            System.out.println("Reservando estoque - Produto: " + cdProduto + ", Quantidade: " + quantidade);
+            if (cdProduto == null || quantidade == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("cdProduto e quantidade são obrigatórios");
+            }
 
-            EstoqueDto atualizado = estoqueService.removerQuantidade(cdProduto, quantidade);
+            if (quantidade <= 0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Quantidade deve ser maior que zero");
+            }
 
-            System.out.println("Estoque reservado com sucesso. Novo estoque: " + atualizado.qtdEstoque());
+            System.out.println("🔒 Reservando estoque - Produto: " + cdProduto + ", Quantidade: " + quantidade);
+
+            // ✅ Usar o método correto que aceita cdProduto
+            EstoqueDto atualizado = estoqueService.removerQuantidade(cdProduto, quantidade, true);
+
+            System.out.println("✅ Estoque reservado. Novo estoque: " + atualizado.qtdEstoque());
 
             return ResponseEntity.ok(atualizado);
         } catch (RuntimeException e) {
-            System.err.println("Erro ao reservar estoque: " + e.getMessage());
+            System.err.println("❌ Erro ao reservar estoque: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
-
+    // ✅ CORRIGIDO: Melhor validação antes de liberar
     @PostMapping("/liberar")
     public ResponseEntity<Object> liberarEstoque(@RequestBody Map<String, Integer> request) {
         try {
             Integer cdProduto = request.get("cdProduto");
             Integer quantidade = request.get("quantidade");
 
-            System.out.println("Liberando estoque - Produto: " + cdProduto + ", Quantidade: " + quantidade);
+            if (cdProduto == null || quantidade == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("cdProduto e quantidade são obrigatórios");
+            }
 
-            EstoqueDto atualizado = estoqueService.adicionarQuantidade(cdProduto, quantidade);
+            if (quantidade <= 0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Quantidade deve ser maior que zero");
+            }
 
-            System.out.println("Estoque liberado com sucesso. Novo estoque: " + atualizado.qtdEstoque());
+            System.out.println("🔓 Liberando estoque - Produto: " + cdProduto + ", Quantidade: " + quantidade);
+
+            // ✅ Usar o método correto que aceita cdProduto
+            EstoqueDto atualizado = estoqueService.adicionarQuantidade(cdProduto, quantidade, true);
+
+            System.out.println("✅ Estoque liberado. Novo estoque: " + atualizado.qtdEstoque());
 
             return ResponseEntity.ok(atualizado);
         } catch (RuntimeException e) {
-            System.err.println("Erro ao liberar estoque: " + e.getMessage());
+            System.err.println("❌ Erro ao liberar estoque: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }

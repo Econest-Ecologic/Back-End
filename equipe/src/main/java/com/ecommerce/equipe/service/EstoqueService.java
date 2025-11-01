@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,12 +37,37 @@ public class EstoqueService {
         return converterParaDto(estoque);
     }
 
+    // ✅ CORRIGIDO: Criar estoque automaticamente se não existir
+    @Transactional
     public EstoqueDto buscarPorProduto(Integer cdProduto) {
-        EstoqueModel estoque = estoqueRepository.findByCdProdutoCdProduto(cdProduto)
-                .orElseThrow(() -> new RuntimeException("Estoque não encontrado para este produto"));
-        return converterParaDto(estoque);
+        System.out.println("🔍 Buscando estoque do produto: " + cdProduto);
+
+        // Verificar se o produto existe
+        ProdutoModel produto = produtoRepository.findById(cdProduto)
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
+        // Buscar ou criar estoque
+        Optional<EstoqueModel> estoqueOpt = estoqueRepository.findByCdProdutoCdProduto(cdProduto);
+
+        if (estoqueOpt.isPresent()) {
+            System.out.println("✅ Estoque encontrado: " + estoqueOpt.get().getQtdEstoque());
+            return converterParaDto(estoqueOpt.get());
+        } else {
+            // ✅ Criar estoque zerado se não existir
+            System.out.println("⚠️ Estoque não encontrado! Criando estoque zerado para produto: " + produto.getNmProduto());
+
+            EstoqueModel novoEstoque = new EstoqueModel();
+            novoEstoque.setCdProduto(produto);
+            novoEstoque.setQtdEstoque(0);
+
+            EstoqueModel salvo = estoqueRepository.save(novoEstoque);
+            System.out.println("✅ Estoque criado com sucesso: " + salvo.getCdEstoque());
+
+            return converterParaDto(salvo);
+        }
     }
 
+    @Transactional
     public EstoqueDto atualizar(Integer cdEstoque, EstoqueDto dto) {
         EstoqueModel estoque = estoqueRepository.findById(cdEstoque)
                 .orElseThrow(() -> new RuntimeException("Estoque não encontrado"));
@@ -62,7 +88,7 @@ public class EstoqueService {
         estoque.setQtdEstoque(estoque.getQtdEstoque() + quantidade);
         EstoqueModel atualizado = estoqueRepository.save(estoque);
 
-        System.out.println("Novo estoque: " + atualizado.getQtdEstoque());
+        System.out.println("✅ Novo estoque: " + atualizado.getQtdEstoque());
 
         return converterParaDto(atualizado);
     }
@@ -72,7 +98,7 @@ public class EstoqueService {
         EstoqueModel estoque = estoqueRepository.findById(cdEstoque)
                 .orElseThrow(() -> new RuntimeException("Estoque não encontrado"));
 
-        System.out.println("Removendo " + quantidade + " do estoque atual: " + estoque.getQtdEstoque());
+        System.out.println("➖ Removendo " + quantidade + " do estoque atual: " + estoque.getQtdEstoque());
 
         if (estoque.getQtdEstoque() < quantidade) {
             throw new RuntimeException("Quantidade insuficiente em estoque. Disponível: " + estoque.getQtdEstoque());
@@ -81,32 +107,39 @@ public class EstoqueService {
         estoque.setQtdEstoque(estoque.getQtdEstoque() - quantidade);
         EstoqueModel atualizado = estoqueRepository.save(estoque);
 
-        System.out.println("Novo estoque: " + atualizado.getQtdEstoque());
+        System.out.println("✅ Novo estoque: " + atualizado.getQtdEstoque());
 
         return converterParaDto(atualizado);
     }
 
+    // ✅ CORRIGIDO: Métodos por cdProduto com criação automática
     @Transactional
     public EstoqueDto adicionarQuantidade(Integer cdProduto, Integer quantidade, boolean isProdutoId) {
-        EstoqueModel estoque = estoqueRepository.findByCdProdutoCdProduto(cdProduto)
-                .orElseThrow(() -> new RuntimeException("Estoque não encontrado para este produto"));
+        System.out.println("➕ [POR PRODUTO] Adicionando " + quantidade + " ao produto: " + cdProduto);
 
-        System.out.println("➕ [POR PRODUTO] Adicionando " + quantidade + " ao estoque atual: " + estoque.getQtdEstoque());
+        // Buscar ou criar estoque
+        EstoqueDto estoqueDto = buscarPorProduto(cdProduto);
+
+        EstoqueModel estoque = estoqueRepository.findById(estoqueDto.cdEstoque())
+                .orElseThrow(() -> new RuntimeException("Erro ao buscar estoque"));
 
         estoque.setQtdEstoque(estoque.getQtdEstoque() + quantidade);
         EstoqueModel atualizado = estoqueRepository.save(estoque);
 
-        System.out.println("[POR PRODUTO] Novo estoque: " + atualizado.getQtdEstoque());
+        System.out.println("✅ [POR PRODUTO] Novo estoque: " + atualizado.getQtdEstoque());
 
         return converterParaDto(atualizado);
     }
 
     @Transactional
     public EstoqueDto removerQuantidade(Integer cdProduto, Integer quantidade, boolean isProdutoId) {
-        EstoqueModel estoque = estoqueRepository.findByCdProdutoCdProduto(cdProduto)
-                .orElseThrow(() -> new RuntimeException("Estoque não encontrado para este produto"));
+        System.out.println("➖ [POR PRODUTO] Removendo " + quantidade + " do produto: " + cdProduto);
 
-        System.out.println("[POR PRODUTO] Removendo " + quantidade + " do estoque atual: " + estoque.getQtdEstoque());
+        // Buscar ou criar estoque
+        EstoqueDto estoqueDto = buscarPorProduto(cdProduto);
+
+        EstoqueModel estoque = estoqueRepository.findById(estoqueDto.cdEstoque())
+                .orElseThrow(() -> new RuntimeException("Erro ao buscar estoque"));
 
         if (estoque.getQtdEstoque() < quantidade) {
             throw new RuntimeException(
@@ -118,7 +151,7 @@ public class EstoqueService {
         estoque.setQtdEstoque(estoque.getQtdEstoque() - quantidade);
         EstoqueModel atualizado = estoqueRepository.save(estoque);
 
-        System.out.println("[POR PRODUTO] Novo estoque: " + atualizado.getQtdEstoque());
+        System.out.println("✅ [POR PRODUTO] Novo estoque: " + atualizado.getQtdEstoque());
 
         return converterParaDto(atualizado);
     }
@@ -135,7 +168,7 @@ public class EstoqueService {
 
             return disponivel;
         } catch (RuntimeException e) {
-            System.err.println("Erro ao verificar disponibilidade: " + e.getMessage());
+            System.err.println("❌ Erro ao verificar disponibilidade: " + e.getMessage());
             return false;
         }
     }
