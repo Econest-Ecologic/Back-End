@@ -27,7 +27,7 @@ public class ProdutoService {
         ProdutoModel model = converterParaModel(dto);
         ProdutoModel salvo = produtoRepository.save(model);
 
-        // ✅ SEMPRE criar estoque ao criar produto
+        // SEMPRE criar estoque ao criar produto
         EstoqueModel estoque = new EstoqueModel();
         estoque.setCdProduto(salvo);
         estoque.setQtdEstoque(dto.qtdEstoque() != null ? dto.qtdEstoque() : 0);
@@ -95,7 +95,7 @@ public class ProdutoService {
 
         ProdutoModel atualizado = produtoRepository.save(produto);
 
-        // ✅ Atualizar ou criar estoque se necessário
+        // Atualizar ou criar estoque se necessário
         if (dto.qtdEstoque() != null) {
             Optional<EstoqueModel> estoqueOpt = estoqueRepository.findByCdProdutoCdProduto(id);
 
@@ -104,14 +104,14 @@ public class ProdutoService {
                 EstoqueModel estoque = estoqueOpt.get();
                 estoque.setQtdEstoque(dto.qtdEstoque());
                 estoqueRepository.save(estoque);
-                System.out.println("✅ Estoque atualizado: " + dto.qtdEstoque());
+                System.out.println("Estoque atualizado: " + dto.qtdEstoque());
             } else {
                 // Criar estoque se não existir
                 EstoqueModel novoEstoque = new EstoqueModel();
                 novoEstoque.setCdProduto(atualizado);
                 novoEstoque.setQtdEstoque(dto.qtdEstoque());
                 estoqueRepository.save(novoEstoque);
-                System.out.println("✅ Estoque criado: " + dto.qtdEstoque());
+                System.out.println("Estoque criado: " + dto.qtdEstoque());
             }
         }
 
@@ -126,7 +126,7 @@ public class ProdutoService {
         System.out.println("🗑️ Inativando produto: " + produto.getNmProduto());
         produto.setFlAtivo(false);
         produtoRepository.save(produto);
-        System.out.println("✅ Produto inativado com sucesso!");
+        System.out.println("Produto inativado com sucesso!");
     }
 
     private ProdutoModel converterParaModel(ProdutoDto dto) {
@@ -151,11 +151,11 @@ public class ProdutoService {
     }
 
     private ProdutoDto converterParaDto(ProdutoModel model) {
-        // ✅ SEMPRE tentar buscar estoque, retornar 0 se não existir
+        // SEMPRE tentar buscar estoque, retornar 0 se não existir
         Integer qtdEstoque = estoqueRepository.findByCdProdutoCdProduto(model.getCdProduto())
                 .map(EstoqueModel::getQtdEstoque)
                 .orElseGet(() -> {
-                    System.out.println("⚠️ Produto sem estoque cadastrado: " + model.getNmProduto() + " - Retornando 0");
+                    System.out.println("Produto sem estoque cadastrado: " + model.getNmProduto() + " - Retornando 0");
                     return 0;
                 });
 

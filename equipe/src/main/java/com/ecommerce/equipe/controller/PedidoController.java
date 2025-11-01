@@ -39,7 +39,7 @@ public class PedidoController {
         }
     }
 
-    // listar pedidos administrador ve todos, usurio so o dele
+    // listar pedidos administrador ve todos, usuario ve só o dele
     @GetMapping
     public ResponseEntity<?> listar(@AuthenticationPrincipal UserDetails userDetails) {
         try {

@@ -66,14 +66,14 @@ public class ItemPedidoService {
 
         System.out.println("Estoque atualizado: " + novoEstoque);
 
-        // 7. Criar item do pedido
+        // Criar item do pedido
         ItemPedidoModel model = converterParaModel(itemPedidoDto);
         model.setPedido(pedido);
         model.setCdProduto(produto);
 
         ItemPedidoModel salvo = itemPedidoRepository.save(model);
 
-        // 8. Recalcular valor total do pedido
+        // Recalcular valor total do pedido
         calcularValorTotal(cdPedido);
 
         System.out.println("Item adicionado ao pedido com sucesso!");
@@ -110,7 +110,7 @@ public class ItemPedidoService {
 
 
         Integer diferenca = qtdNova - qtdAnterior;
-        System.out.println("📊 Diferença: " + diferenca);
+        System.out.println("Diferença: " + diferenca);
 
         if (diferenca > 0) {
             // Aumentou quantidade - precisa diminuir estoque

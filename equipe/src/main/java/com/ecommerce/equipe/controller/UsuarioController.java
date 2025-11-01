@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -26,7 +27,6 @@ public class UsuarioController {
         UsuarioDto usuario = usuarioService.salvar(usuarioDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
     }
-
 
     @GetMapping
     public ResponseEntity<List<UsuarioDto>> listar() {
@@ -88,10 +88,10 @@ public class UsuarioController {
 
     @DeleteMapping("/{cdUsuario}")
     public ResponseEntity<String> inativar(@PathVariable Integer cdUsuario) {
-        try{
+        try {
             usuarioService.inativar(cdUsuario);
             return ResponseEntity.ok("Usuario inativado com sucesso");
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
