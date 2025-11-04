@@ -82,7 +82,7 @@ public class EstoqueController {
                         .body("Quantidade deve ser maior que zero");
             }
 
-            System.out.println("🔒 Reservando estoque - Produto: " + cdProduto + ", Quantidade: " + quantidade);
+            System.out.println("Reservando estoque - Produto: " + cdProduto + ", Quantidade: " + quantidade);
 
 
             EstoqueDto atualizado = estoqueService.removerQuantidade(cdProduto, quantidade, true);
@@ -112,7 +112,7 @@ public class EstoqueController {
                         .body("Quantidade deve ser maior que zero");
             }
 
-            System.out.println("🔓 Liberando estoque - Produto: " + cdProduto + ", Quantidade: " + quantidade);
+            System.out.println("Liberando estoque - Produto: " + cdProduto + ", Quantidade: " + quantidade);
 
             EstoqueDto atualizado = estoqueService.adicionarQuantidade(cdProduto, quantidade, true);
 

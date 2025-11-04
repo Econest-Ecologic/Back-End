@@ -27,13 +27,12 @@ public class ProdutoService {
         ProdutoModel model = converterParaModel(dto);
         ProdutoModel salvo = produtoRepository.save(model);
 
-        // SEMPRE criar estoque ao criar produto
         EstoqueModel estoque = new EstoqueModel();
         estoque.setCdProduto(salvo);
         estoque.setQtdEstoque(dto.qtdEstoque() != null ? dto.qtdEstoque() : 0);
         estoqueRepository.save(estoque);
 
-        System.out.println("✅ Produto criado com estoque: " + salvo.getNmProduto() + " (Estoque: " + estoque.getQtdEstoque() + ")");
+        System.out.println("Produto criado com estoque: " + salvo.getNmProduto() + " (Estoque: " + estoque.getQtdEstoque() + ")");
 
         return converterParaDto(salvo);
     }
@@ -95,18 +94,15 @@ public class ProdutoService {
 
         ProdutoModel atualizado = produtoRepository.save(produto);
 
-        // Atualizar ou criar estoque se necessário
         if (dto.qtdEstoque() != null) {
             Optional<EstoqueModel> estoqueOpt = estoqueRepository.findByCdProdutoCdProduto(id);
 
             if (estoqueOpt.isPresent()) {
-                // Atualizar estoque existente
                 EstoqueModel estoque = estoqueOpt.get();
                 estoque.setQtdEstoque(dto.qtdEstoque());
                 estoqueRepository.save(estoque);
                 System.out.println("Estoque atualizado: " + dto.qtdEstoque());
             } else {
-                // Criar estoque se não existir
                 EstoqueModel novoEstoque = new EstoqueModel();
                 novoEstoque.setCdProduto(atualizado);
                 novoEstoque.setQtdEstoque(dto.qtdEstoque());
@@ -123,7 +119,7 @@ public class ProdutoService {
         ProdutoModel produto = produtoRepository.findById(cd)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado com o ID: " + cd));
 
-        System.out.println("🗑️ Inativando produto: " + produto.getNmProduto());
+        System.out.println("Inativando produto: " + produto.getNmProduto());
         produto.setFlAtivo(false);
         produtoRepository.save(produto);
         System.out.println("Produto inativado com sucesso!");

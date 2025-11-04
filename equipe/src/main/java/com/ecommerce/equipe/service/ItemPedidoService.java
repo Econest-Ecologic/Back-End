@@ -66,14 +66,12 @@ public class ItemPedidoService {
 
         System.out.println("Estoque atualizado: " + novoEstoque);
 
-        // Criar item do pedido
         ItemPedidoModel model = converterParaModel(itemPedidoDto);
         model.setPedido(pedido);
         model.setCdProduto(produto);
 
         ItemPedidoModel salvo = itemPedidoRepository.save(model);
 
-        // Recalcular valor total do pedido
         calcularValorTotal(cdPedido);
 
         System.out.println("Item adicionado ao pedido com sucesso!");
@@ -113,7 +111,6 @@ public class ItemPedidoService {
         System.out.println("Diferença: " + diferenca);
 
         if (diferenca > 0) {
-            // Aumentou quantidade - precisa diminuir estoque
             if (estoque.getQtdEstoque() < diferenca) {
                 throw new RuntimeException(
                         "Estoque insuficiente. Disponível: " + estoque.getQtdEstoque()
@@ -122,7 +119,6 @@ public class ItemPedidoService {
             estoque.setQtdEstoque(estoque.getQtdEstoque() - diferenca);
             System.out.println("Diminuindo estoque em " + diferenca);
         } else if (diferenca < 0) {
-            // Diminuiu quantidade - precisa aumentar estoque
             estoque.setQtdEstoque(estoque.getQtdEstoque() + Math.abs(diferenca));
             System.out.println("Aumentando estoque em " + Math.abs(diferenca));
         }
@@ -130,13 +126,11 @@ public class ItemPedidoService {
         estoqueRepository.save(estoque);
         System.out.println("Novo estoque: " + estoque.getQtdEstoque());
 
-        // Atualizar item
         item.setQtdItem(itemPedidoDto.qtdItem());
         item.setPrecoUnitario(itemPedidoDto.precoUnitario());
 
         ItemPedidoModel atualizado = itemPedidoRepository.save(item);
 
-        // Recalcular total
         calcularValorTotal(item.getPedido().getCdPedido());
 
         return atualizado;

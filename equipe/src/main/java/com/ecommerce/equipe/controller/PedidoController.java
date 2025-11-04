@@ -27,7 +27,6 @@ public class PedidoController {
         this.usuarioRepository = usuarioRepository;
     }
 
-    // cadastrar pedido
     @PostMapping("/usuario/{cdUsuario}")
     public ResponseEntity<?> salvar(@PathVariable Integer cdUsuario,
                                     @RequestBody @Valid PedidoDto pedidoDto) {
@@ -39,7 +38,6 @@ public class PedidoController {
         }
     }
 
-    // listar pedidos administrador ve todos, usuario ve só o dele
     @GetMapping
     public ResponseEntity<?> listar(@AuthenticationPrincipal UserDetails userDetails) {
         try {
@@ -60,7 +58,6 @@ public class PedidoController {
         }
     }
 
-    // buscar pedido por id (só o dono ou admin)
     @GetMapping("/{cdPedido}")
     public ResponseEntity<?> buscarPedido(@PathVariable Integer cdPedido, @AuthenticationPrincipal UserDetails userDetails) {
         try {
@@ -87,7 +84,6 @@ public class PedidoController {
         }
     }
 
-    // atualizar pedido, admin ou dono
     @PutMapping("/{cdPedido}")
     public ResponseEntity<?> atualizar(@PathVariable Integer cdPedido, @RequestBody @Valid PedidoDto pedidoDto,
                                        @AuthenticationPrincipal UserDetails userDetails) {
@@ -116,7 +112,6 @@ public class PedidoController {
         }
     }
 
-    // deletar  pedido so o administrador
     @DeleteMapping("/{cdPedido}")
     public ResponseEntity<?> cancelar(@PathVariable Integer cdPedido,
                                       @AuthenticationPrincipal UserDetails userDetails) {
@@ -140,7 +135,6 @@ public class PedidoController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pedido não encontrado");
             }
 
-            // admin tem permissao pra deletar o pedido
             pedidoService.cancelarPedido(cdPedido);
             return ResponseEntity.ok("Pedido deletado com sucesso pelo administrador!");
         } catch (Exception e) {

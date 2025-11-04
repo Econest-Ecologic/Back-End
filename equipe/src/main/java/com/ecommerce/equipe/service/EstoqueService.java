@@ -41,11 +41,9 @@ public class EstoqueService {
     public EstoqueDto buscarPorProduto(Integer cdProduto) {
         System.out.println("🔍 Buscando estoque do produto: " + cdProduto);
 
-        // Verificar se o produto existe
         ProdutoModel produto = produtoRepository.findById(cdProduto)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
 
-        // Buscar ou criar estoque
         Optional<EstoqueModel> estoqueOpt = estoqueRepository.findByCdProdutoCdProduto(cdProduto);
 
         if (estoqueOpt.isPresent()) {
@@ -116,7 +114,6 @@ public class EstoqueService {
     public EstoqueDto adicionarQuantidade(Integer cdProduto, Integer quantidade, boolean isProdutoId) {
         System.out.println("[POR PRODUTO] Adicionando " + quantidade + " ao produto: " + cdProduto);
 
-        // Buscar ou criar estoque
         EstoqueDto estoqueDto = buscarPorProduto(cdProduto);
 
         EstoqueModel estoque = estoqueRepository.findById(estoqueDto.cdEstoque())
@@ -134,7 +131,6 @@ public class EstoqueService {
     public EstoqueDto removerQuantidade(Integer cdProduto, Integer quantidade, boolean isProdutoId) {
         System.out.println("[POR PRODUTO] Removendo " + quantidade + " do produto: " + cdProduto);
 
-        // Buscar ou criar estoque
         EstoqueDto estoqueDto = buscarPorProduto(cdProduto);
 
         EstoqueModel estoque = estoqueRepository.findById(estoqueDto.cdEstoque())

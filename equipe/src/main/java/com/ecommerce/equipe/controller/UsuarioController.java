@@ -46,7 +46,6 @@ public class UsuarioController {
             boolean isAdmin = usuarioLogado.getRoles().stream()
                     .anyMatch(role -> role.getNmRole().equals("ADMIN"));
 
-            // ser nao e admin ve somente o proprio perfil
             if (!isAdmin && !usuarioLogado.getCdUsuario().equals(cdUsuario)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body("Você só pode ver seu próprio perfil!");
@@ -65,15 +64,12 @@ public class UsuarioController {
             @RequestBody @Valid UsuarioDto usuarioDto,
             @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            // busca o usuário logado
             UsuarioModel usuarioLogado = usuarioRepository.findByNmEmail(userDetails.getUsername())
                     .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-            // verificar se é administrador
             boolean isAdmin = usuarioLogado.getRoles().stream()
                     .anyMatch(role -> role.getNmRole().equals("ADMIN"));
 
-            // se nao e admin, so pode edita o próprio perfil
             if (!isAdmin && !usuarioLogado.getCdUsuario().equals(cdUsuario)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body("Você só pode editar seu próprio perfil!");
