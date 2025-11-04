@@ -39,7 +39,7 @@ public class EstoqueService {
 
     @Transactional
     public EstoqueDto buscarPorProduto(Integer cdProduto) {
-        System.out.println("🔍 Buscando estoque do produto: " + cdProduto);
+        System.out.println("Buscando estoque do produto: " + cdProduto);
 
         ProdutoModel produto = produtoRepository.findById(cdProduto)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));

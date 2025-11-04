@@ -29,6 +29,8 @@ public class AuthController {
         }
     }
 
+
+
     @PostMapping("/register")
     public ResponseEntity<Object> register(@RequestBody @Valid RegisterRequestDto registerDto) {
         try {
